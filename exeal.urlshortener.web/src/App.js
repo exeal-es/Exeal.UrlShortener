@@ -1,29 +1,8 @@
-import React, { useRef } from 'react';
-import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
+import React from 'react';
+import { Auth0Provider } from '@auth0/auth0-react';
 import './App.css';
-import UrlList from './UrlList';
-import UrlShortenerForm from './UrlShortenerForm';
 import Navbar from './components/Navbar';
-
-function Profile() {
-  const { isAuthenticated, isLoading } = useAuth0();
-  const urlListRef = useRef();
-
-  if (!isAuthenticated) {
-    return null;
-  }
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  return (
-    <div className="mt-8 p-4">
-      <UrlShortenerForm onUrlCreated={() => urlListRef.current?.fetchUrls()} />
-      <UrlList ref={urlListRef} />
-    </div>
-  );
-}
+import Profile from './components/Profile';
 
 function App() {
   return (
