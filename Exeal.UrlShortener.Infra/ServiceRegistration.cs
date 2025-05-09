@@ -1,6 +1,7 @@
 using Exeal.UrlShortener.Ports.Output;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Exeal.UrlShortener.Infra;
 
@@ -20,8 +21,11 @@ public static class ServiceRegistration
         if (isTrackingEnabled)
         {
             var postgresClickTrackingService = new PostgresClickTrackingService(configuration.GetConnectionString("DefaultConnection")!);
-            services.AddScoped<IClickTracker>(_ => postgresClickTrackingService);
-            services.AddScoped<IClickStatisticsProvider>(_ => postgresClickTrackingService);
+            services.AddSingleton<IClickTracker>(sp => new BufferedClickTracker(
+                sp.GetRequiredService<ILogger<BufferedClickTracker>>(),
+                postgresClickTrackingService
+            ));
+            services.AddSingleton<IClickStatisticsProvider>(_ => postgresClickTrackingService);
         }
         else
         {

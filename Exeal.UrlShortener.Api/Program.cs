@@ -4,7 +4,6 @@ using Exeal.UrlShortener.Infra;
 using Exeal.UrlShortener.Ports.Input;
 using FluentMigrator.Runner;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.OpenApi.Models;
 using Serilog;
 
