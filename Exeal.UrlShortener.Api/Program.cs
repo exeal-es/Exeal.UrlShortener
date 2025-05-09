@@ -1,5 +1,7 @@
 using Exeal.UrlShortener.Application;
+using Exeal.UrlShortener.Infra;
 using Exeal.UrlShortener.Ports.Input;
+using Exeal.UrlShortener.Ports.Output;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +23,12 @@ builder.Services.AddCors();
 // Register application services
 builder.Services.AddScoped<IShortUrlManager, ShortUrlManager>();
 builder.Services.AddScoped<IShortUrlResolver, ShortUrlResolver>();
+
+// Register infrastructure services
+builder.Services.AddScoped<IShortUrlRepository, InMemoryShortUrlRepository>();
+builder.Services.AddScoped<ISlugGenerator, RandomSlugGenerator>();
+builder.Services.AddScoped<IClickTracker, InMemoryClickTracker>();
+builder.Services.AddScoped<IClock, SystemClock>();
 
 var app = builder.Build();
 

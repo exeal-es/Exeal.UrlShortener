@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# 
+#
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exeal.UrlShortener", "Exeal.UrlShortener\Exeal.UrlShortener.csproj", "{2783F542-C42D-4720-AF1E-C84C831DD994}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exeal.UrlShortener.Tests", "Exeal.UrlShortener.Tests\Exeal.UrlShortener.Tests.csproj", "{E299CF91-C0F0-4B0B-9BF5-7D52AF99C24B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exeal.UrlShortener.Api", "Exeal.UrlShortener.Api\Exeal.UrlShortener.Api.csproj", "{E877DCF5-585D-41DA-AB63-8D915A5CB9C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exeal.UrlShortener.Infra", "Exeal.UrlShortener.Infra\Exeal.UrlShortener.Infra.csproj", "{8781AAB2-6879-444F-9B60-C37F50A34D0F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,5 +27,9 @@ Global
 		{E877DCF5-585D-41DA-AB63-8D915A5CB9C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E877DCF5-585D-41DA-AB63-8D915A5CB9C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E877DCF5-585D-41DA-AB63-8D915A5CB9C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8781AAB2-6879-444F-9B60-C37F50A34D0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8781AAB2-6879-444F-9B60-C37F50A34D0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8781AAB2-6879-444F-9B60-C37F50A34D0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8781AAB2-6879-444F-9B60-C37F50A34D0F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

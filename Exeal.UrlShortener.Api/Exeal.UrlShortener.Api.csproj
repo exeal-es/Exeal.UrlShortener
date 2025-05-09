@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Exeal.UrlShortener.Infra\Exeal.UrlShortener.Infra.csproj" />
     <ProjectReference Include="..\Exeal.UrlShortener\Exeal.UrlShortener.csproj" />
   </ItemGroup>
 
