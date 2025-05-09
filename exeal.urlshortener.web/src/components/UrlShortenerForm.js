@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
+import { createShortUrl } from '../services/urlService';
 
 function UrlShortenerForm({ onUrlCreated }) {
   const [destinationUrl, setDestinationUrl] = useState('');
@@ -15,26 +16,7 @@ function UrlShortenerForm({ onUrlCreated }) {
 
     try {
       const token = await getAccessTokenSilently();
-      const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/api/shorturl`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            destinationUrl,
-            customSlug: customSlug || undefined,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to create shortened URL');
-      }
-
-      const data = await response.json();
+      await createShortUrl(token, destinationUrl, customSlug);
       setDestinationUrl('');
       setCustomSlug('');
       if (onUrlCreated) {

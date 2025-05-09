@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback, forwardRef, useImperativeHandle } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
+import { fetchUrls } from '../services/urlService';
 
 const UrlList = forwardRef((props, ref) => {
   const [urls, setUrls] = useState([]);
@@ -7,24 +8,11 @@ const UrlList = forwardRef((props, ref) => {
   const [error, setError] = useState(null);
   const { getAccessTokenSilently } = useAuth0();
 
-  const fetchUrls = useCallback(async () => {
+  const fetchUrlsData = useCallback(async () => {
     setLoading(true);
     try {
       const token = await getAccessTokenSilently();
-      const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/api/shorturl?skip=0&take=10`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch URLs');
-      }
-
-      const data = await response.json();
+      const data = await fetchUrls(token);
       setUrls(data);
     } catch (err) {
       setError(err.message);
@@ -34,12 +22,12 @@ const UrlList = forwardRef((props, ref) => {
   }, [getAccessTokenSilently]);
 
   useImperativeHandle(ref, () => ({
-    fetchUrls
+    fetchUrls: fetchUrlsData
   }));
 
   useEffect(() => {
-    fetchUrls();
-  }, [fetchUrls]);
+    fetchUrlsData();
+  }, [fetchUrlsData]);
 
   const handleCopy = (text) => {
     navigator.clipboard.writeText(text);
