@@ -8,7 +8,7 @@ public class ShortUrlManager(
 {
     public async Task<string> CreateAsync(string destinationUrl, string? customSlug = null)
     {
-        var slug = await slugGenerator.GenerateAsync();
+        var slug = customSlug ?? await slugGenerator.GenerateAsync();
 
         var shortUrl = new ShortUrl(slug, destinationUrl, clock.UtcNow());
         await repository.SaveAsync(shortUrl);

@@ -45,4 +45,26 @@ public class ShortUrlManagerTests
         Assert.Equal(validUrl, shortUrl.DestinationUrl);
         Assert.Equal(clock.UtcNow(), shortUrl.CreatedAt);
     }
+    
+    [Fact]
+    public async Task CreateAsync_ShouldSaveShortUrlWithCustomSlug_WhenCalledWithValidUrlAndCustomSlug()
+    {
+        // Arrange
+        var validUrl = "https://example.com";
+        var customSlug = "pilares";
+
+        // Act
+        var result = await shortUrlManager.CreateAsync(validUrl, customSlug);
+
+        // Assert
+        Assert.Equal(customSlug, result);
+
+        var exists = await shortUrlRepository.ExistsAsync(customSlug);
+        Assert.True(exists);
+
+        var shortUrl = await shortUrlRepository.LoadBySlugAsync(customSlug);
+        Assert.NotNull(shortUrl);
+        Assert.Equal(validUrl, shortUrl.DestinationUrl);
+        Assert.Equal(clock.UtcNow(), shortUrl.CreatedAt);
+    }
 }
