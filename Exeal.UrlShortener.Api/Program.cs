@@ -1,11 +1,21 @@
 using Exeal.UrlShortener.Application;
 using Exeal.UrlShortener.Ports.Input;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo 
+    { 
+        Title = "Exeal URL Shortener API", 
+        Version = "v1",
+        Description = "API para acortar URLs y gestionar estadísticas"
+    });
+});
 builder.Services.AddCors();
 
 // Register application services
@@ -18,6 +28,12 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
+    app.UseSwagger();
+    app.UseSwaggerUI(c => 
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Exeal URL Shortener API v1");
+        c.RoutePrefix = string.Empty; // Serve Swagger UI at root
+    });
 }
 
 app.UseCors(policy => policy
