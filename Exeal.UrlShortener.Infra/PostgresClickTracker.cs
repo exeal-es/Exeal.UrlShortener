@@ -20,7 +20,7 @@ public class PostgresClickTracker : IClickTracker
 
         using var connection = new Npgsql.NpgsqlConnection(_connectionString);
         await connection.ExecuteAsync(
-            @"INSERT INTO Clicks (Slug, VisitorFingerprint, CreatedAt) 
+            @"INSERT INTO ""Clicks"" (""Slug"", ""VisitorFingerprint"", ""CreatedAt"") 
               VALUES (@Slug, @VisitorFingerprint, @CreatedAt)",
             new
             {
@@ -42,7 +42,7 @@ public class PostgresClickTracker : IClickTracker
     {
         using var connection = new Npgsql.NpgsqlConnection(_connectionString);
         return await connection.ExecuteScalarAsync<int>(
-            "SELECT COUNT(*) FROM Clicks WHERE Slug = @Slug",
+            @"SELECT COUNT(*) FROM ""Clicks"" WHERE ""Slug"" = @Slug",
             new { Slug = slug });
     }
 
@@ -50,7 +50,7 @@ public class PostgresClickTracker : IClickTracker
     {
         using var connection = new Npgsql.NpgsqlConnection(_connectionString);
         return await connection.ExecuteScalarAsync<int>(
-            "SELECT COUNT(DISTINCT VisitorFingerprint) FROM Clicks WHERE Slug = @Slug",
+            @"SELECT COUNT(DISTINCT ""VisitorFingerprint"") FROM ""Clicks"" WHERE ""Slug"" = @Slug",
             new { Slug = slug });
     }
 }
