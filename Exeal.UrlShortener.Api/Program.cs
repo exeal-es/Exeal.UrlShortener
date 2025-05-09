@@ -1,8 +1,10 @@
+using System.Threading.RateLimiting;
 using Exeal.UrlShortener.Application;
 using Exeal.UrlShortener.Infra;
 using Exeal.UrlShortener.Ports.Input;
 using FluentMigrator.Runner;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.OpenApi.Models;
 using Serilog;
 
@@ -40,6 +42,30 @@ builder.Services.AddAuthentication(options =>
     options.Audience = "https://exeal-urlshortener.onrender.com";
 });
 
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddPolicy("ResolveLimiter", context =>
+    {
+        var ip = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+        return RateLimitPartition.GetFixedWindowLimiter(ip, _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = builder.Configuration.GetValue<int>("RateLimiter:ResolveLimiter:PermitLimit"),
+            Window = TimeSpan.FromMinutes(1),
+            QueueLimit = 0
+        });
+    });
+
+    options.OnRejected = async (context, token) =>
+    {
+        var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+        var ip = context.HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+        logger.LogWarning("Rate limit exceeded for {IP}", ip);
+
+        context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+        await context.HttpContext.Response.WriteAsync("Too many requests.");
+    };
+});
+
 // Register application services
 builder.Services.AddScoped<IShortUrlManager, ShortUrlManager>();
 builder.Services.AddScoped<IShortUrlResolver, ShortUrlResolver>();
@@ -74,6 +100,7 @@ app.UseCors(policy => policy
     .AllowAnyHeader());
 
 app.UseRouting();
+app.UseRateLimiter();
 app.UseAuthorization();
 app.MapControllers();
 
