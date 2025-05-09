@@ -1,6 +1,7 @@
 import React from 'react';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import './App.css';
+import UrlList from './UrlList';
 
 function LoginButton() {
   const { loginWithRedirect } = useAuth0();
@@ -35,6 +36,7 @@ function Profile() {
         <h2>Welcome {user.name}!</h2>
         <p>Email: {user.email}</p>
         <LogoutButton />
+        <UrlList />
       </div>
     )
   );
@@ -45,6 +47,9 @@ function App() {
     <Auth0Provider
       domain={process.env.REACT_APP_AUTH0_DOMAIN}
       clientId={process.env.REACT_APP_AUTH0_CLIENT_ID}
+      authorizationParams={{
+        audience: process.env.REACT_APP_AUTH0_AUDIENCE
+      }}
       redirectUri={window.location.origin}
     >
       <div className="App">
