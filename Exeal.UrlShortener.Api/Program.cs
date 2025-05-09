@@ -2,6 +2,7 @@ using Exeal.UrlShortener.Application;
 using Exeal.UrlShortener.Infra;
 using Exeal.UrlShortener.Ports.Input;
 using Exeal.UrlShortener.Ports.Output;
+using FluentMigrator.Runner;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,12 +26,19 @@ builder.Services.AddScoped<IShortUrlManager, ShortUrlManager>();
 builder.Services.AddScoped<IShortUrlResolver, ShortUrlResolver>();
 
 // Register infrastructure services
-builder.Services.AddSingleton<IShortUrlRepository, InMemoryShortUrlRepository>();
+builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddScoped<ISlugGenerator, RandomSlugGenerator>();
 builder.Services.AddSingleton<IClickTracker, InMemoryClickTracker>();
 builder.Services.AddScoped<IClock, SystemClock>();
 
 var app = builder.Build();
+
+// Run database migrations
+using (var scope = app.Services.CreateScope())
+{
+    var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
+    runner.MigrateUp();
+}
 
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())

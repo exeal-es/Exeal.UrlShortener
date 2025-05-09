@@ -10,4 +10,11 @@
       <ProjectReference Include="..\Exeal.UrlShortener\Exeal.UrlShortener.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Dapper" Version="2.1.66" />
+      <PackageReference Include="FluentMigrator.Extensions.Postgres" Version="7.1.0" />
+      <PackageReference Include="FluentMigrator.Runner" Version="7.1.0" />
+      <PackageReference Include="Npgsql" Version="9.0.3" />
+    </ItemGroup>
+
 </Project>
