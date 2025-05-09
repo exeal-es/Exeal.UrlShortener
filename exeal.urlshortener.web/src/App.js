@@ -24,24 +24,60 @@ function LogoutButton() {
   );
 }
 
+function UserProfile() {
+  const { user, isAuthenticated } = useAuth0();
+
+  if (!isAuthenticated) return null;
+
+  return (
+    <div className="flex items-center gap-4">
+      <div className="text-sm">
+        <p className="font-semibold text-gray-900">{user.name}</p>
+        <p className="text-gray-600">{user.email}</p>
+      </div>
+    </div>
+  );
+}
+
 function Profile() {
-  const { user, isAuthenticated, isLoading } = useAuth0();
+  const { isAuthenticated, isLoading } = useAuth0();
   const urlListRef = useRef();
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
   return (
-    isAuthenticated && (
-      <div className="mt-8 p-4">
-        <h2 className="text-lg font-semibold mb-4 text-gray-900">Welcome {user.name}!</h2>
-        <p className="mb-2 text-gray-700">Email: {user.email}</p>
-        <LogoutButton />
-        <UrlShortenerForm onUrlCreated={() => urlListRef.current?.fetchUrls()} />
-        <UrlList ref={urlListRef} />
+    <div className="mt-8 p-4">
+      <UrlShortenerForm onUrlCreated={() => urlListRef.current?.fetchUrls()} />
+      <UrlList ref={urlListRef} />
+    </div>
+  );
+}
+
+function Navbar() {
+  const { isAuthenticated } = useAuth0();
+  
+  return (
+    <nav className="bg-white shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          <div className="flex-shrink-0">
+            <h1 className="text-2xl font-bold text-gray-900">URL Shortener</h1>
+          </div>
+          <div className="flex items-center gap-4">
+            <UserProfile />
+            <div className="flex items-center">
+              {!isAuthenticated ? <LoginButton /> : <LogoutButton />}
+            </div>
+          </div>
+        </div>
       </div>
-    )
+    </nav>
   );
 }
 
@@ -56,11 +92,10 @@ function App() {
       redirectUri={window.location.origin}
     >
       <div className="min-h-screen bg-gray-50 text-gray-900 font-sans">
-        <header className="border-b border-gray-200 px-8 pt-8 pb-0 text-left">
-          <h1 className="text-3xl font-bold mb-6">URL Shortener</h1>
-          <LoginButton />
+        <Navbar />
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Profile />
-        </header>
+        </main>
       </div>
     </Auth0Provider>
   );
