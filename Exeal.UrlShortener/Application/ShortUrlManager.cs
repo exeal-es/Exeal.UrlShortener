@@ -4,7 +4,10 @@ using Exeal.UrlShortener.Ports.Output;
 namespace Exeal.UrlShortener.Application;
 
 public class ShortUrlManager(
-    IShortUrlRepository repository, ISlugGenerator slugGenerator, IClock clock) : IShortUrlManager
+    IShortUrlRepository repository,
+    ISlugGenerator slugGenerator,
+    IClickTracker clickTracker,
+    IClock clock) : IShortUrlManager
 {
     public async Task<string> CreateAsync(string destinationUrl, string? customSlug = null)
     {
@@ -21,8 +24,15 @@ public class ShortUrlManager(
         return slug;
     }
 
-    public Task<ShortUrlStats> GetStatsAsync(string slug)
+    public async Task<ShortUrlStats> GetStatsAsync(string slug)
     {
-        throw new NotImplementedException();
+        var shortUrl = await repository.LoadBySlugAsync(slug);
+        
+        return new ShortUrlStats(
+            slug,
+            shortUrl.DestinationUrl,
+            shortUrl.CreatedAt,
+            await clickTracker.GetClickCountAsync(slug),
+            await clickTracker.GetUniqueVisitorCountAsync(slug));
     }
 }

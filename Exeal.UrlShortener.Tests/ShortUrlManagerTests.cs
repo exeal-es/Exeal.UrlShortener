@@ -10,17 +10,20 @@ public class ShortUrlManagerTests
 {
     private readonly ISlugGenerator slugGenerator;
     private readonly IShortUrlRepository shortUrlRepository;
+    private readonly IClickTracker clickTracker;
     private readonly IClock clock;
     
     private readonly ShortUrlManager shortUrlManager;
+
 
     public ShortUrlManagerTests()
     {
         slugGenerator = Substitute.For<ISlugGenerator>();
         shortUrlRepository = new InMemoryShortUrlRepository();
+        clickTracker = Substitute.For<IClickTracker>();
         clock = new StaticClock();
 
-        shortUrlManager = new ShortUrlManager(shortUrlRepository, slugGenerator, clock);
+        shortUrlManager = new ShortUrlManager(shortUrlRepository, slugGenerator, clickTracker, clock);
     }
     
     [Fact]
@@ -83,5 +86,28 @@ public class ShortUrlManagerTests
 
         // Assert
         await Assert.ThrowsAsync<SlugAlreadyExistsException>(act);
+    }
+    
+    [Fact]
+    public async Task GetStatsAsync_ShouldReturnStatsWithTotalClicksAndUniqueVisitors_WhenSlugExists()
+    {
+        // Arrange
+        var slug = "curso-tdd";
+        var totalClicks = 10;
+        var uniqueVisitors = 5;
+
+        var shortUrl = new ShortUrl(slug, "https://example.com", clock.UtcNow());
+        await shortUrlRepository.SaveAsync(shortUrl);
+
+        clickTracker.GetClickCountAsync(slug).Returns(totalClicks);
+        clickTracker.GetUniqueVisitorCountAsync(slug).Returns(uniqueVisitors);
+
+        // Act
+        var stats = await shortUrlManager.GetStatsAsync(slug);
+
+        // Assert
+        Assert.NotNull(stats);
+        Assert.Equal(totalClicks, stats.ClickCount);
+        Assert.Equal(uniqueVisitors, stats.UniqueVisitorCount);
     }
 }
