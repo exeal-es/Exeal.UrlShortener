@@ -27,6 +27,11 @@ public class ShortUrlManager(
     public async Task<ShortUrlStats> GetStatsAsync(string slug)
     {
         var shortUrl = await repository.LoadBySlugAsync(slug);
+
+        if (shortUrl == null)
+        {
+            throw new SlugDoesNotExistException(slug);
+        }
         
         return new ShortUrlStats(
             slug,

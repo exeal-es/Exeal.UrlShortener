@@ -12,7 +12,7 @@ public class ShortUrlManagerTests
     private readonly IShortUrlRepository shortUrlRepository;
     private readonly IClickTracker clickTracker;
     private readonly IClock clock;
-    
+
     private readonly ShortUrlManager shortUrlManager;
 
 
@@ -25,7 +25,7 @@ public class ShortUrlManagerTests
 
         shortUrlManager = new ShortUrlManager(shortUrlRepository, slugGenerator, clickTracker, clock);
     }
-    
+
     [Fact]
     public async Task CreateAsync_ShouldGenerateSlugAndSaveShortUrl_WhenCalledWithValidUrlAndNoSlug()
     {
@@ -34,22 +34,22 @@ public class ShortUrlManagerTests
         var generatedSlug = "abc123";
 
         slugGenerator.GenerateAsync().Returns(generatedSlug);
-        
+
         // Act
         var result = await shortUrlManager.CreateAsync(validUrl);
 
         // Assert
         Assert.Equal(generatedSlug, result);
-        
+
         var exists = await shortUrlRepository.ExistsAsync(generatedSlug);
         Assert.True(exists);
-        
+
         var shortUrl = await shortUrlRepository.LoadBySlugAsync(generatedSlug);
         Assert.NotNull(shortUrl);
         Assert.Equal(validUrl, shortUrl.DestinationUrl);
         Assert.Equal(clock.UtcNow(), shortUrl.CreatedAt);
     }
-    
+
     [Fact]
     public async Task CreateAsync_ShouldSaveShortUrlWithCustomSlug_WhenCalledWithValidUrlAndCustomSlug()
     {
@@ -71,7 +71,7 @@ public class ShortUrlManagerTests
         Assert.Equal(validUrl, shortUrl.DestinationUrl);
         Assert.Equal(clock.UtcNow(), shortUrl.CreatedAt);
     }
-    
+
     [Fact]
     public async Task CreateAsync_ShouldThrowSlugAlreadyExistsException_WhenSlugAlreadyExists()
     {
@@ -87,7 +87,7 @@ public class ShortUrlManagerTests
         // Assert
         await Assert.ThrowsAsync<SlugAlreadyExistsException>(act);
     }
-    
+
     [Fact]
     public async Task GetStatsAsync_ShouldReturnStatsWithTotalClicksAndUniqueVisitors_WhenSlugExists()
     {
@@ -109,5 +109,18 @@ public class ShortUrlManagerTests
         Assert.NotNull(stats);
         Assert.Equal(totalClicks, stats.ClickCount);
         Assert.Equal(uniqueVisitors, stats.UniqueVisitorCount);
+    }
+
+    [Fact]
+    public async Task GetStatsAsync_ShouldThrowException_WhenSlugDoesNotExist()
+    {
+        // Arrange
+        var nonExistentSlug = "non-existent-slug";
+
+        // Act
+        var act = async () => await shortUrlManager.GetStatsAsync(nonExistentSlug);
+
+        // Assert
+        await Assert.ThrowsAsync<SlugDoesNotExistException>(act);
     }
 }
