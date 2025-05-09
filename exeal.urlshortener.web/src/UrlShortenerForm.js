@@ -38,7 +38,7 @@ function UrlShortenerForm({ onUrlCreated }) {
       setDestinationUrl('');
       setCustomSlug('');
       if (onUrlCreated) {
-        onUrlCreated(data);
+        onUrlCreated();
       }
     } catch (err) {
       setError(err.message);

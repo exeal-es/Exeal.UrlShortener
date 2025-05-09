@@ -1,13 +1,14 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, forwardRef, useImperativeHandle } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 
-function UrlList() {
+const UrlList = forwardRef((props, ref) => {
   const [urls, setUrls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { getAccessTokenSilently } = useAuth0();
 
   const fetchUrls = useCallback(async () => {
+    setLoading(true);
     try {
       const token = await getAccessTokenSilently();
       const response = await fetch(
@@ -31,6 +32,10 @@ function UrlList() {
       setLoading(false);
     }
   }, [getAccessTokenSilently]);
+
+  useImperativeHandle(ref, () => ({
+    fetchUrls
+  }));
 
   useEffect(() => {
     fetchUrls();
@@ -67,6 +72,6 @@ function UrlList() {
       )}
     </div>
   );
-}
+});
 
 export default UrlList; 
