@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import UrlList from '../UrlList';
-import UrlShortenerForm from '../UrlShortenerForm';
+import UrlList from './UrlList';
+import UrlShortenerForm from './UrlShortenerForm';
 
 function Profile() {
   const { isAuthenticated, isLoading } = useAuth0();
