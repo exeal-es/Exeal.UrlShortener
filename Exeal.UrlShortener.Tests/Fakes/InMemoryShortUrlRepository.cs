@@ -30,4 +30,9 @@ public class InMemoryShortUrlRepository : IShortUrlRepository
 
         return Task.FromResult<ShortUrl?>(null);
     }
+
+    public Task<IEnumerable<ShortUrl>> ListAsync(int skip = 0, int take = 10)
+    {
+        return Task.FromResult(storage.Values.Skip(skip).Take(take));
+    }
 }

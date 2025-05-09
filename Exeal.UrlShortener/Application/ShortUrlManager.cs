@@ -54,4 +54,21 @@ public class ShortUrlManager(
         logger.LogInformation("GetStatsAsync - Completed fetching stats for slug {Slug}", slug);
         return shortUrlStats;
     }
+
+    public async Task<Result<IEnumerable<ShortUrl>>> ListAsync(int skip = 0, int take = 10)
+    {
+        logger.LogInformation("ListAsync - Fetching short URLs with skip {Skip} and take {Take}", skip, take);
+
+        try
+        {
+            var shortUrls = await repository.ListAsync(skip, take);
+            logger.LogInformation("ListAsync - Successfully fetched {Count} short URLs", shortUrls.Count());
+            return Result.Success(shortUrls);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "ListAsync - Error occurred while fetching short URLs");
+            return Result.Failure<IEnumerable<ShortUrl>>("An error occurred while fetching the list of short URLs.");
+        }
+    }
 }
