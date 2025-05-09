@@ -27,9 +27,6 @@ builder.Services.AddScoped<IShortUrlResolver, ShortUrlResolver>();
 
 // Register infrastructure services
 builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddScoped<ISlugGenerator, RandomSlugGenerator>();
-builder.Services.AddSingleton<IClickTracker, InMemoryClickTracker>();
-builder.Services.AddScoped<IClock, SystemClock>();
 
 var app = builder.Build();
 

@@ -13,6 +13,12 @@ public static class ServiceRegistration
         services.AddScoped<IShortUrlRepository>(sp => 
             new PostgresShortUrlRepository(configuration.GetConnectionString("DefaultConnection")!));
 
+        services.AddScoped<IClickTracker>(sp => 
+            new PostgresClickTracker(configuration.GetConnectionString("DefaultConnection")!));
+
+        services.AddScoped<ISlugGenerator, RandomSlugGenerator>();
+        services.AddScoped<IClock, SystemClock>();
+        
         return services;
     }
 } 
