@@ -1,9 +1,11 @@
 using Exeal.UrlShortener.Api.Models;
 using Exeal.UrlShortener.Ports.Input;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Exeal.UrlShortener.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/shorturl")]
 public class ShortUrlManagerController : ControllerBase

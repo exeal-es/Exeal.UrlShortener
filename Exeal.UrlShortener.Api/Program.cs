@@ -1,8 +1,8 @@
 using Exeal.UrlShortener.Application;
 using Exeal.UrlShortener.Infra;
 using Exeal.UrlShortener.Ports.Input;
-using Exeal.UrlShortener.Ports.Output;
 using FluentMigrator.Runner;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +20,17 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 builder.Services.AddCors();
+
+// Add Authentication Services
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.Authority = "https://exeal-admin.eu.auth0.com/";
+    options.Audience = "https://exeal-urlshortener.onrender.com";
+});
 
 // Register application services
 builder.Services.AddScoped<IShortUrlManager, ShortUrlManager>();
@@ -55,6 +66,7 @@ app.UseCors(policy => policy
     .AllowAnyHeader());
 
 app.UseRouting();
+app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
