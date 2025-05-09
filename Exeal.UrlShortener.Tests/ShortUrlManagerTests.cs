@@ -2,12 +2,13 @@
 using Exeal.UrlShortener.Ports.Input;
 using Exeal.UrlShortener.Ports.Output;
 using Exeal.UrlShortener.Tests.Fakes;
-using NSubstitute;
 
 namespace Exeal.UrlShortener.Tests;
 
 public class ShortUrlManagerTests
 {
+    private const string GeneratedSlug = "abc123";
+    
     private readonly ISlugGenerator slugGenerator;
     private readonly IShortUrlRepository shortUrlRepository;
     private readonly IClickTracker clickTracker;
@@ -18,7 +19,7 @@ public class ShortUrlManagerTests
 
     public ShortUrlManagerTests()
     {
-        slugGenerator = Substitute.For<ISlugGenerator>();
+        slugGenerator = new StaticSlugGenerator(GeneratedSlug);
         shortUrlRepository = new InMemoryShortUrlRepository();
         clickTracker = new InMemoryClickTracker();
         clock = new StaticClock();
@@ -31,20 +32,17 @@ public class ShortUrlManagerTests
     {
         // Arrange
         var validUrl = "https://example.com";
-        var generatedSlug = "abc123";
-
-        slugGenerator.GenerateAsync().Returns(generatedSlug);
 
         // Act
         var result = await shortUrlManager.CreateAsync(validUrl);
 
         // Assert
-        Assert.Equal(generatedSlug, result);
+        Assert.Equal(GeneratedSlug, result);
 
-        var exists = await shortUrlRepository.ExistsAsync(generatedSlug);
+        var exists = await shortUrlRepository.ExistsAsync(GeneratedSlug);
         Assert.True(exists);
 
-        var shortUrl = await shortUrlRepository.LoadBySlugAsync(generatedSlug);
+        var shortUrl = await shortUrlRepository.LoadBySlugAsync(GeneratedSlug);
         Assert.NotNull(shortUrl);
         Assert.Equal(validUrl, shortUrl.DestinationUrl);
         Assert.Equal(clock.UtcNow(), shortUrl.CreatedAt);

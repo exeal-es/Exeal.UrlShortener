@@ -2,8 +2,6 @@
 using Exeal.UrlShortener.Ports.Input;
 using Exeal.UrlShortener.Ports.Output;
 using Exeal.UrlShortener.Tests.Fakes;
-using NSubstitute;
-using NSubstitute.ReturnsExtensions;
 
 namespace Exeal.UrlShortener.Tests;
 
