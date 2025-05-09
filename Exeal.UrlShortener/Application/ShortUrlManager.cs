@@ -1,10 +1,12 @@
 ﻿using CSharpFunctionalExtensions;
 using Exeal.UrlShortener.Ports.Input;
 using Exeal.UrlShortener.Ports.Output;
+using Microsoft.Extensions.Logging;
 
 namespace Exeal.UrlShortener.Application;
 
 public class ShortUrlManager(
+    ILogger<ShortUrlManager> logger,
     IShortUrlRepository repository,
     ISlugGenerator slugGenerator,
     IClickTracker clickTracker,
@@ -12,33 +14,44 @@ public class ShortUrlManager(
 {
     public async Task<Result<string>> CreateAsync(string destinationUrl, string? customSlug = null)
     {
+        logger.LogInformation("CreateAsync - Creating short URL for {DestinationUrl} with custom slug {CustomSlug}",
+            destinationUrl, customSlug);
+
         var slug = customSlug ?? await slugGenerator.GenerateAsync();
 
         if (await repository.ExistsAsync(slug))
         {
+            logger.LogInformation("CreateAsync - Tried to create a short URL with an existing slug {Slug}", slug);
             return Result.Failure<string>($"The slug {slug} is already exists.");
         }
 
         var shortUrl = new ShortUrl(slug, destinationUrl, clock.UtcNow());
         await repository.SaveAsync(shortUrl);
 
+        logger.LogInformation("CreateAsync - Short URL created with slug {Slug} for {DestinationUrl}", slug,
+            destinationUrl);
         return slug;
     }
 
     public async Task<Result<ShortUrlStats>> GetStatsAsync(string slug)
     {
+        logger.LogInformation("GetStatsAsync - Fetching stats for slug {Slug}", slug);
         var shortUrl = await repository.LoadBySlugAsync(slug);
 
         if (shortUrl == null)
         {
+            logger.LogWarning("GetStatsAsync - Slug {Slug} does not exist", slug);
             return Result.Failure<ShortUrlStats>($"The slug {slug} does not exist.");
         }
 
-        return new ShortUrlStats(
+        var shortUrlStats = new ShortUrlStats(
             slug,
             shortUrl.DestinationUrl,
             shortUrl.CreatedAt,
             await clickTracker.GetClickCountAsync(slug),
             await clickTracker.GetUniqueVisitorCountAsync(slug));
+
+        logger.LogInformation("GetStatsAsync - Completed fetching stats for slug {Slug}", slug);
+        return shortUrlStats;
     }
 }

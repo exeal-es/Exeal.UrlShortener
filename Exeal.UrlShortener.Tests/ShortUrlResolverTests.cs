@@ -1,6 +1,7 @@
 ﻿using Exeal.UrlShortener.Application;
 using Exeal.UrlShortener.Ports.Output;
 using Exeal.UrlShortener.Tests.Fakes;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Exeal.UrlShortener.Tests;
 
@@ -16,7 +17,7 @@ public class ShortUrlResolverTests
         shortUrlRepository = new InMemoryShortUrlRepository();
         clickTracker = new InMemoryClickTracker();
 
-        shortUrlResolver = new ShortUrlResolver(shortUrlRepository, clickTracker);
+        shortUrlResolver = new ShortUrlResolver(NullLogger<ShortUrlResolver>.Instance, shortUrlRepository, clickTracker);
     }
 
     [Fact]

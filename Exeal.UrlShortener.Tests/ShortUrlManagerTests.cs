@@ -1,6 +1,7 @@
 ﻿using Exeal.UrlShortener.Application;
 using Exeal.UrlShortener.Ports.Output;
 using Exeal.UrlShortener.Tests.Fakes;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Exeal.UrlShortener.Tests;
 
@@ -22,7 +23,8 @@ public class ShortUrlManagerTests
         clickTracker = new InMemoryClickTracker();
         clock = new StaticClock();
 
-        shortUrlManager = new ShortUrlManager(shortUrlRepository, slugGenerator, clickTracker, clock);
+        shortUrlManager = new ShortUrlManager(NullLogger<ShortUrlManager>.Instance, shortUrlRepository, slugGenerator,
+            clickTracker, clock);
     }
 
     [Fact]
