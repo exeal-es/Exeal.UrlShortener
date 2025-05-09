@@ -4,6 +4,7 @@ using Exeal.UrlShortener.Ports.Input;
 using FluentMigrator.Runner;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,13 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 builder.Services.AddCors();
+
+// Add logging
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 // Add Authentication Services
 builder.Services.AddAuthentication(options =>
