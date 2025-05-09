@@ -74,6 +74,8 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
+app.MapGet("/", () => Results.Redirect("https://www.exeal.com/"));
+
 // Run database migrations
 using (var scope = app.Services.CreateScope())
 {
@@ -89,7 +91,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c => 
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Exeal URL Shortener API v1");
-        c.RoutePrefix = string.Empty; // Serve Swagger UI at root
     });
 }
 
