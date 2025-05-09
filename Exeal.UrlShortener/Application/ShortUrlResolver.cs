@@ -4,7 +4,7 @@ using Exeal.UrlShortener.Ports.Output;
 namespace Exeal.UrlShortener.Application;
 
 public class ShortUrlResolver(
-    IShortUrlRepository repository, ISlugGenerator slugGenerator, IClickTracker clickTracker, IClock clock) : IShortUrlResolver
+    IShortUrlRepository repository, IClickTracker clickTracker) : IShortUrlResolver
 {
     public async Task<string> ResolveAsync(string slug, string ipAddress, string userAgent)
     {

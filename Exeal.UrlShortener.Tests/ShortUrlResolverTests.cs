@@ -7,21 +7,17 @@ namespace Exeal.UrlShortener.Tests;
 
 public class ShortUrlResolverTests
 {
-    private readonly ISlugGenerator slugGenerator;
     private readonly IShortUrlRepository shortUrlRepository;
     private readonly IClickTracker clickTracker;
-    private readonly IClock clock;
     
     private readonly ShortUrlResolver shortUrlResolver;
 
     public ShortUrlResolverTests()
     {
-        slugGenerator = Substitute.For<ISlugGenerator>();
         shortUrlRepository = new InMemoryShortUrlRepository();
         clickTracker = Substitute.For<IClickTracker>();
-        clock = new StaticClock();
 
-        shortUrlResolver = new ShortUrlResolver(shortUrlRepository, slugGenerator, clickTracker, clock);
+        shortUrlResolver = new ShortUrlResolver(shortUrlRepository, clickTracker);
     }
     
     [Fact]
@@ -33,7 +29,7 @@ public class ShortUrlResolverTests
         var ip = "192.168.1.1";
         var userAgent = "Mozilla/5.0";
 
-        var shortUrl = new ShortUrl(slug, destinationUrl, clock.UtcNow());
+        var shortUrl = new ShortUrl(slug, destinationUrl, DateTime.UtcNow);
         await shortUrlRepository.SaveAsync(shortUrl);
 
         // Act

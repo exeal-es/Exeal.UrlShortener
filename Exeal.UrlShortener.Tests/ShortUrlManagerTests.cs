@@ -9,7 +9,6 @@ public class ShortUrlManagerTests
 {
     private readonly ISlugGenerator slugGenerator;
     private readonly IShortUrlRepository shortUrlRepository;
-    private readonly IClickTracker clickTracker;
     private readonly IClock clock;
     
     private readonly ShortUrlManager shortUrlManager;
@@ -18,10 +17,9 @@ public class ShortUrlManagerTests
     {
         slugGenerator = Substitute.For<ISlugGenerator>();
         shortUrlRepository = new InMemoryShortUrlRepository();
-        clickTracker = Substitute.For<IClickTracker>();
         clock = new StaticClock();
 
-        shortUrlManager = new ShortUrlManager(shortUrlRepository, slugGenerator, clickTracker, clock);
+        shortUrlManager = new ShortUrlManager(shortUrlRepository, slugGenerator, clock);
     }
     
     [Fact]
