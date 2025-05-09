@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import './App.css';
 import UrlList from './UrlList';
+import UrlShortenerForm from './UrlShortenerForm';
 
 function LoginButton() {
   const { loginWithRedirect } = useAuth0();
@@ -25,6 +26,7 @@ function LogoutButton() {
 
 function Profile() {
   const { user, isAuthenticated, isLoading } = useAuth0();
+  const urlListRef = useRef();
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -36,7 +38,8 @@ function Profile() {
         <h2>Welcome {user.name}!</h2>
         <p>Email: {user.email}</p>
         <LogoutButton />
-        <UrlList />
+        <UrlShortenerForm onUrlCreated={() => urlListRef.current?.fetchUrls()} />
+        <UrlList ref={urlListRef} />
       </div>
     )
   );
