@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using Exeal.UrlShortener.Ports.Output;
 
 namespace Exeal.UrlShortener.Ports.Input;
 
@@ -18,4 +19,12 @@ public interface IShortUrlManager
     /// <param name="slug">The unique identifier for the short URL.</param>
     /// <returns>A result containing the statistics of the short URL if the slug exists, or an error message if it does not.</returns>
     Task<Result<ShortUrlStats>> GetStatsAsync(string slug);
+
+    /// <summary>
+    /// Lists all created short URLs with pagination support.
+    /// </summary>
+    /// <param name="skip">The number of items to skip (for pagination).</param>
+    /// <param name="take">The maximum number of items to return (for pagination).</param>
+    /// <returns>A result containing a collection of short URLs.</returns>
+    Task<Result<IEnumerable<ShortUrl>>> ListAsync(int skip = 0, int take = 10);
 }

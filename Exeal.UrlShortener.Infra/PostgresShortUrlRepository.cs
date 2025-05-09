@@ -4,18 +4,11 @@ using Npgsql;
 
 namespace Exeal.UrlShortener.Infra;
 
-public class PostgresShortUrlRepository : IShortUrlRepository
+public class PostgresShortUrlRepository(string connectionString) : IShortUrlRepository
 {
-    private readonly string _connectionString;
-
-    public PostgresShortUrlRepository(string connectionString)
-    {
-        _connectionString = connectionString;
-    }
-
     public async Task<bool> ExistsAsync(string slug)
     {
-        using var connection = new NpgsqlConnection(_connectionString);
+        using var connection = new NpgsqlConnection(connectionString);
         var exists = await connection.ExecuteScalarAsync<bool>(
             "SELECT EXISTS(SELECT 1 FROM \"ShortUrls\" WHERE \"Slug\" = @Slug)",
             new { Slug = slug });
@@ -24,7 +17,7 @@ public class PostgresShortUrlRepository : IShortUrlRepository
 
     public async Task SaveAsync(ShortUrl shortUrl)
     {
-        using var connection = new NpgsqlConnection(_connectionString);
+        using var connection = new NpgsqlConnection(connectionString);
         var sql = @"
             INSERT INTO ""ShortUrls"" (""Slug"", ""DestinationUrl"", ""CreatedAt"")
             VALUES (@Slug, @DestinationUrl, @CreatedAt)";
@@ -46,12 +39,24 @@ public class PostgresShortUrlRepository : IShortUrlRepository
 
     public async Task<ShortUrl?> LoadBySlugAsync(string slug)
     {
-        using var connection = new NpgsqlConnection(_connectionString);
+        using var connection = new NpgsqlConnection(connectionString);
         var sql = @"
             SELECT ""Slug"", ""DestinationUrl"", ""CreatedAt""
             FROM ""ShortUrls""
             WHERE ""Slug"" = @Slug";
 
         return await connection.QuerySingleOrDefaultAsync<ShortUrl>(sql, new { Slug = slug });
+    }
+
+    public async Task<IEnumerable<ShortUrl>> ListAsync(int skip = 0, int take = 10)
+    {
+        using var connection = new NpgsqlConnection(connectionString);
+        var sql = @"
+            SELECT ""Slug"", ""DestinationUrl"", ""CreatedAt""
+            FROM ""ShortUrls""
+            ORDER BY ""CreatedAt"" DESC
+            LIMIT @Take OFFSET @Skip";
+
+        return await connection.QueryAsync<ShortUrl>(sql, new { Skip = skip, Take = take });
     }
 }

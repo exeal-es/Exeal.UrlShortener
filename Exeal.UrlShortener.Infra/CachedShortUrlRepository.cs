@@ -32,4 +32,9 @@ public class CachedShortUrlRepository(IShortUrlRepository repository) : IShortUr
 
         return shortUrl;
     }
+
+    public Task<IEnumerable<ShortUrl>> ListAsync(int skip = 0, int take = 10)
+    {
+        return repository.ListAsync(skip, take);
+    }
 } 

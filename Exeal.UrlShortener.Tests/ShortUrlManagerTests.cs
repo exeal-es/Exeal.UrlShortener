@@ -125,4 +125,79 @@ public class ShortUrlManagerTests
         Assert.True(result.IsFailure);
         Assert.Equal($"The slug {nonExistentSlug} does not exist.", result.Error);
     }
+
+    [Fact]
+    public async Task ListAsync_ShouldReturnShortUrls_WhenUrlsExist()
+    {
+        // Arrange
+        var shortUrls = new[]
+        {
+            new ShortUrl("slug1", "https://example1.com", clock.UtcNow()),
+            new ShortUrl("slug2", "https://example2.com", clock.UtcNow()),
+            new ShortUrl("slug3", "https://example3.com", clock.UtcNow())
+        };
+
+        foreach (var shortUrl in shortUrls)
+        {
+            await shortUrlRepository.SaveAsync(shortUrl);
+        }
+
+        // Act
+        var result = await shortUrlManager.ListAsync();
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        var returnedUrls = result.Value.ToList();
+        Assert.Equal(3, returnedUrls.Count);
+
+        // Verify URLs
+        var firstUrl = returnedUrls.First(s => s.Slug == "slug1");
+        Assert.Equal("https://example1.com", firstUrl.DestinationUrl);
+
+        var secondUrl = returnedUrls.First(s => s.Slug == "slug2");
+        Assert.Equal("https://example2.com", secondUrl.DestinationUrl);
+
+        var thirdUrl = returnedUrls.First(s => s.Slug == "slug3");
+        Assert.Equal("https://example3.com", thirdUrl.DestinationUrl);
+    }
+
+    [Fact]
+    public async Task ListAsync_ShouldRespectPagination_WhenUrlsExist()
+    {
+        // Arrange
+        var shortUrls = new[]
+        {
+            new ShortUrl("slug1", "https://example1.com", clock.UtcNow()),
+            new ShortUrl("slug2", "https://example2.com", clock.UtcNow()),
+            new ShortUrl("slug3", "https://example3.com", clock.UtcNow()),
+            new ShortUrl("slug4", "https://example4.com", clock.UtcNow()),
+            new ShortUrl("slug5", "https://example5.com", clock.UtcNow())
+        };
+
+        foreach (var shortUrl in shortUrls)
+        {
+            await shortUrlRepository.SaveAsync(shortUrl);
+        }
+
+        // Act
+        var result = await shortUrlManager.ListAsync(skip: 2, take: 2);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        var returnedUrls = result.Value.ToList();
+        Assert.Equal(2, returnedUrls.Count);
+        Assert.Equal("slug3", returnedUrls[0].Slug);
+        Assert.Equal("slug4", returnedUrls[1].Slug);
+    }
+
+    [Fact]
+    public async Task ListAsync_ShouldReturnEmptyList_WhenNoUrlsExist()
+    {
+        // Act
+        var result = await shortUrlManager.ListAsync();
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.Empty(result.Value);
+    }
 }
