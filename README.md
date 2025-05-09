@@ -50,6 +50,21 @@ dotnet run --project Exeal.UrlShortener.Api
 The API will be available at:
 http://localhost:5030
 
+### 4. Running with Docker
+
+Build the image:
+```bash
+docker build . -t exeal/url-shortener-api
+```
+
+Run the container:
+```bash
+docker run --name url-shortener-api \
+  -e "ConnectionStrings__DefaultConnection=Host=host.docker.internal;Port=5432;Database=urlshortener;Username=devuser;Password=devpass" \
+  -p 5030:5030 \
+  exeal/url-shortener-api
+```
+
 ---
 
 ## 📝 License
