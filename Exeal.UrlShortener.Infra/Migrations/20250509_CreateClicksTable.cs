@@ -8,28 +8,27 @@ public class CreateClicksTable : Migration
 {
     public override void Up()
     {
-        Create.Table("clicks")
-            .WithColumn("id").AsInt32().PrimaryKey().Identity()
-            .WithColumn("slug").AsString().NotNullable()
-            .ForeignKey("fk_clicks_short_urls", "short_urls", "slug").OnDelete(Rule.Cascade)
-            .WithColumn("ip_address").AsString().NotNullable()
-            .WithColumn("user_agent").AsString().NotNullable()
-            .WithColumn("created_at").AsDateTimeOffset().NotNullable();
+        Create.Table("Clicks")
+            .WithColumn("Id").AsInt32().PrimaryKey().Identity()
+            .WithColumn("Slug").AsString().NotNullable()
+            .ForeignKey("fk_clicks_short_urls", "ShortUrls", "Slug").OnDelete(Rule.Cascade)
+            .WithColumn("VisitorFingerprint").AsString().NotNullable()
+            .WithColumn("CreatedAt").AsDateTimeOffset().NotNullable();
         
         Create.Index("idx_clicks_slug")
-            .OnTable("clicks")
-            .OnColumn("slug");
+            .OnTable("Clicks")
+            .OnColumn("Slug");
 
-        Create.Index("idx_clicks_slug_ip")
-            .OnTable("clicks")
-            .OnColumn("slug").Ascending()
-            .OnColumn("ip_address").Ascending();
+        Create.Index("idx_clicks_slug_fingerprint")
+            .OnTable("Clicks")
+            .OnColumn("Slug").Ascending()
+            .OnColumn("VisitorFingerprint").Ascending();
     }
 
     public override void Down()
     {
-        Delete.Index("idx_clicks_slug_ip").OnTable("clicks");
-        Delete.Index("idx_clicks_slug").OnTable("clicks");
-        Delete.Table("clicks");
+        Delete.Index("idx_clicks_slug_fingerprint").OnTable("Clicks");
+        Delete.Index("idx_clicks_slug").OnTable("Clicks");
+        Delete.Table("Clicks");
     }
 } 
