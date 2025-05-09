@@ -8,14 +8,14 @@ namespace Exeal.UrlShortener.Tests;
 public class ShortUrlResolverTests
 {
     private readonly IShortUrlRepository shortUrlRepository;
-    private readonly IClickTracker clickTracker;
+    private readonly InMemoryClickTrackingService clickTracker;
 
     private readonly ShortUrlResolver shortUrlResolver;
 
     public ShortUrlResolverTests()
     {
         shortUrlRepository = new InMemoryShortUrlRepository();
-        clickTracker = new InMemoryClickTracker();
+        clickTracker = new InMemoryClickTrackingService();
 
         shortUrlResolver = new ShortUrlResolver(NullLogger<ShortUrlResolver>.Instance, shortUrlRepository, clickTracker);
     }

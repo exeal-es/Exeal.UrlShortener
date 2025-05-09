@@ -9,7 +9,7 @@ public class ShortUrlManager(
     ILogger<ShortUrlManager> logger,
     IShortUrlRepository repository,
     ISlugGenerator slugGenerator,
-    IClickTracker clickTracker,
+    IClickStatisticsProvider clickStatisticsProvider,
     IClock clock) : IShortUrlManager
 {
     public async Task<Result<string>> CreateAsync(string destinationUrl, string? customSlug = null)
@@ -48,8 +48,8 @@ public class ShortUrlManager(
             slug,
             shortUrl.DestinationUrl,
             shortUrl.CreatedAt,
-            await clickTracker.GetClickCountAsync(slug),
-            await clickTracker.GetUniqueVisitorCountAsync(slug));
+            await clickStatisticsProvider.GetClickCountAsync(slug),
+            await clickStatisticsProvider.GetUniqueVisitorCountAsync(slug));
 
         logger.LogInformation("GetStatsAsync - Completed fetching stats for slug {Slug}", slug);
         return shortUrlStats;

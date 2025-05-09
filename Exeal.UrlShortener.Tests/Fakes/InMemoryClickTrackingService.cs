@@ -2,7 +2,7 @@
 
 namespace Exeal.UrlShortener.Tests.Fakes;
 
-public class InMemoryClickTracker : IClickTracker
+public class InMemoryClickTrackingService : IClickTracker, IClickStatisticsProvider
 {
     private readonly Dictionary<string, HashSet<string>> _uniqueVisitors = new();
     private readonly Dictionary<string, int> _clickCounts = new();

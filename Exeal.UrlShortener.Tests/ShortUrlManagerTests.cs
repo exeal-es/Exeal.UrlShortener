@@ -11,7 +11,7 @@ public class ShortUrlManagerTests
 
     private readonly ISlugGenerator slugGenerator;
     private readonly IShortUrlRepository shortUrlRepository;
-    private readonly IClickTracker clickTracker;
+    private readonly InMemoryClickTrackingService clickTrackingService;
     private readonly IClock clock;
 
     private readonly ShortUrlManager shortUrlManager;
@@ -20,11 +20,11 @@ public class ShortUrlManagerTests
     {
         slugGenerator = new StaticSlugGenerator(GeneratedSlug);
         shortUrlRepository = new InMemoryShortUrlRepository();
-        clickTracker = new InMemoryClickTracker();
+        clickTrackingService = new InMemoryClickTrackingService();
         clock = new StaticClock();
 
         shortUrlManager = new ShortUrlManager(NullLogger<ShortUrlManager>.Instance, shortUrlRepository, slugGenerator,
-            clickTracker, clock);
+            clickTrackingService, clock);
     }
 
     [Fact]
@@ -98,9 +98,9 @@ public class ShortUrlManagerTests
         var shortUrl = new ShortUrl(slug, "https://example.com", clock.UtcNow());
         await shortUrlRepository.SaveAsync(shortUrl);
 
-        await clickTracker.RegisterAsync(slug, "1.2.3.4", userAgent);
-        await clickTracker.RegisterAsync(slug, "1.2.3.4", userAgent);
-        await clickTracker.RegisterAsync(slug, "5.6.7.8", userAgent);
+        await clickTrackingService.RegisterAsync(slug, "1.2.3.4", userAgent);
+        await clickTrackingService.RegisterAsync(slug, "1.2.3.4", userAgent);
+        await clickTrackingService.RegisterAsync(slug, "5.6.7.8", userAgent);
 
         // Act
         var result = await shortUrlManager.GetStatsAsync(slug);

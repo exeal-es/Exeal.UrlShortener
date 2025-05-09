@@ -5,20 +5,13 @@ using System.Text;
 
 namespace Exeal.UrlShortener.Infra;
 
-public class PostgresClickTracker : IClickTracker
+public class PostgresClickTrackingService(string connectionString) : IClickTracker, IClickStatisticsProvider
 {
-    private readonly string _connectionString;
-
-    public PostgresClickTracker(string connectionString)
-    {
-        _connectionString = connectionString;
-    }
-
     public async Task RegisterAsync(string slug, string ipAddress, string userAgent)
     {
         var visitorFingerprint = ComputeVisitorFingerprint(ipAddress, userAgent);
 
-        using var connection = new Npgsql.NpgsqlConnection(_connectionString);
+        using var connection = new Npgsql.NpgsqlConnection(connectionString);
         await connection.ExecuteAsync(
             @"INSERT INTO ""Clicks"" (""Slug"", ""VisitorFingerprint"", ""CreatedAt"") 
               VALUES (@Slug, @VisitorFingerprint, @CreatedAt)",
@@ -40,7 +33,7 @@ public class PostgresClickTracker : IClickTracker
 
     public async Task<int> GetClickCountAsync(string slug)
     {
-        using var connection = new Npgsql.NpgsqlConnection(_connectionString);
+        using var connection = new Npgsql.NpgsqlConnection(connectionString);
         return await connection.ExecuteScalarAsync<int>(
             @"SELECT COUNT(*) FROM ""Clicks"" WHERE ""Slug"" = @Slug",
             new { Slug = slug });
@@ -48,7 +41,7 @@ public class PostgresClickTracker : IClickTracker
 
     public async Task<int> GetUniqueVisitorCountAsync(string slug)
     {
-        using var connection = new Npgsql.NpgsqlConnection(_connectionString);
+        using var connection = new Npgsql.NpgsqlConnection(connectionString);
         return await connection.ExecuteScalarAsync<int>(
             @"SELECT COUNT(DISTINCT ""VisitorFingerprint"") FROM ""Clicks"" WHERE ""Slug"" = @Slug",
             new { Slug = slug });

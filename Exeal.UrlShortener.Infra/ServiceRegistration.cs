@@ -17,10 +17,18 @@ public static class ServiceRegistration
         });
 
         var isTrackingEnabled = configuration.GetValue<bool>("Features:Tracking:Enabled");
-        services.AddScoped<IClickTracker>(sp => 
-            isTrackingEnabled 
-                ? new PostgresClickTracker(configuration.GetConnectionString("DefaultConnection")!)
-                : new NullClickTracker());
+        if (isTrackingEnabled)
+        {
+            var postgresClickTrackingService = new PostgresClickTrackingService(configuration.GetConnectionString("DefaultConnection")!);
+            services.AddScoped<IClickTracker>(_ => postgresClickTrackingService);
+            services.AddScoped<IClickStatisticsProvider>(_ => postgresClickTrackingService);
+        }
+        else
+        {
+            services.AddScoped<IClickTracker, NullClickTracker>();
+            services.AddScoped<IClickStatisticsProvider, NullClickStatisticsProvider>();
+
+        }
 
         services.AddScoped<ISlugGenerator, RandomSlugGenerator>();
         services.AddScoped<IClock, SystemClock>();

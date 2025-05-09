@@ -8,14 +8,4 @@ public class NullClickTracker : IClickTracker
     {
         return Task.CompletedTask;
     }
-
-    public Task<int> GetClickCountAsync(string slug)
-    {
-        return Task.FromResult(0);
-    }
-
-    public Task<int> GetUniqueVisitorCountAsync(string slug)
-    {
-        return Task.FromResult(0);
-    }
 } 
