@@ -1,6 +1,8 @@
-﻿namespace Exeal.UrlShortener.Ports.Input;
+﻿using CSharpFunctionalExtensions;
+
+namespace Exeal.UrlShortener.Ports.Input;
 
 public interface IShortUrlResolver
 {
-    Task<string> ResolveAsync(string slug, string ipAddress, string userAgent);
+    Task<Result<string>> ResolveAsync(string slug, string ipAddress, string userAgent);
 }

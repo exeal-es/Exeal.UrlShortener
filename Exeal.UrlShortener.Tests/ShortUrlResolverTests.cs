@@ -43,7 +43,7 @@ public class ShortUrlResolverTests
     }
 
     [Fact]
-    public async Task ResolveAsync_ShouldThrowSlugDoesNotExistException_WhenSlugDoesNotExist()
+    public async Task ResolveAsync_ShouldFail_WhenSlugDoesNotExist()
     {
         // Arrange
         var nonExistentSlug = "non-existent-slug";
@@ -51,9 +51,10 @@ public class ShortUrlResolverTests
         var userAgent = "TestUserAgent";
 
         // Act
-        var act = async () => await shortUrlResolver.ResolveAsync(nonExistentSlug, ipAddress, userAgent);
+        var result = await shortUrlResolver.ResolveAsync(nonExistentSlug, ipAddress, userAgent);
 
         // Assert
-        await Assert.ThrowsAsync<SlugDoesNotExistException>(act);
+        Assert.True(result.IsFailure);
+        Assert.Equal($"The slug {nonExistentSlug} does not exist.", result.Error);
     }
 }

@@ -1,7 +1,9 @@
-﻿namespace Exeal.UrlShortener.Ports.Input;
+﻿using CSharpFunctionalExtensions;
+
+namespace Exeal.UrlShortener.Ports.Input;
 
 public interface IShortUrlManager
 {
-    Task<string> CreateAsync(string destinationUrl, string? customSlug = null);
-    Task<ShortUrlStats> GetStatsAsync(string slug);
+    Task<Result<string>> CreateAsync(string destinationUrl, string? customSlug = null);
+    Task<Result<ShortUrlStats>> GetStatsAsync(string slug);
 }
