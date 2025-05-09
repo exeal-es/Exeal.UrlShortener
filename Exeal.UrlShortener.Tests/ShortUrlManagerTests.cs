@@ -20,7 +20,7 @@ public class ShortUrlManagerTests
     {
         slugGenerator = Substitute.For<ISlugGenerator>();
         shortUrlRepository = new InMemoryShortUrlRepository();
-        clickTracker = Substitute.For<IClickTracker>();
+        clickTracker = new InMemoryClickTracker();
         clock = new StaticClock();
 
         shortUrlManager = new ShortUrlManager(shortUrlRepository, slugGenerator, clickTracker, clock);
@@ -93,22 +93,23 @@ public class ShortUrlManagerTests
     {
         // Arrange
         var slug = "curso-tdd";
-        var totalClicks = 10;
-        var uniqueVisitors = 5;
+        var ipAddress = "127.0.0.1";
+        var userAgent = "TestUserAgent";
 
         var shortUrl = new ShortUrl(slug, "https://example.com", clock.UtcNow());
         await shortUrlRepository.SaveAsync(shortUrl);
 
-        clickTracker.GetClickCountAsync(slug).Returns(totalClicks);
-        clickTracker.GetUniqueVisitorCountAsync(slug).Returns(uniqueVisitors);
+        await clickTracker.RegisterAsync(slug, "1.2.3.4", userAgent);
+        await clickTracker.RegisterAsync(slug, "1.2.3.4", userAgent);
+        await clickTracker.RegisterAsync(slug, "5.6.7.8", userAgent);
 
         // Act
         var stats = await shortUrlManager.GetStatsAsync(slug);
 
         // Assert
         Assert.NotNull(stats);
-        Assert.Equal(totalClicks, stats.ClickCount);
-        Assert.Equal(uniqueVisitors, stats.UniqueVisitorCount);
+        Assert.Equal(3, stats.ClickCount);
+        Assert.Equal(2, stats.UniqueVisitorCount);
     }
 
     [Fact]
