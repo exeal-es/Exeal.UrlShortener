@@ -13,12 +13,11 @@ public class InMemoryShortUrlRepository : IShortUrlRepository
 
     public Task SaveAsync(ShortUrl shortUrl)
     {
-        if (storage.ContainsKey(shortUrl.Slug))
+        if (!storage.TryAdd(shortUrl.Slug, shortUrl))
         {
             throw new InvalidOperationException("Slug already exists.");
         }
 
-        storage[shortUrl.Slug] = shortUrl;
         return Task.CompletedTask;
     }
 

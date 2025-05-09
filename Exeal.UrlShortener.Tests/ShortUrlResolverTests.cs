@@ -1,5 +1,4 @@
 ﻿using Exeal.UrlShortener.Application;
-using Exeal.UrlShortener.Ports.Input;
 using Exeal.UrlShortener.Ports.Output;
 using Exeal.UrlShortener.Tests.Fakes;
 
