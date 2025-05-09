@@ -25,7 +25,7 @@ function UrlShortenerForm({ onUrlCreated }) {
           },
           body: JSON.stringify({
             destinationUrl,
-            slug: customSlug || undefined,
+            customSlug: customSlug || undefined,
           }),
         }
       );
