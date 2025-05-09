@@ -17,7 +17,7 @@ public class ShortUrlResolverTests
     public ShortUrlResolverTests()
     {
         shortUrlRepository = new InMemoryShortUrlRepository();
-        clickTracker = Substitute.For<IClickTracker>();
+        clickTracker = new InMemoryClickTracker();
 
         shortUrlResolver = new ShortUrlResolver(shortUrlRepository, clickTracker);
     }
@@ -39,7 +39,9 @@ public class ShortUrlResolverTests
 
         // Assert
         Assert.Equal(destinationUrl, result);
-        await clickTracker.Received(1).RegisterAsync(slug, ip, userAgent);
+        
+        var clickCount = await clickTracker.GetClickCountAsync(slug);
+        Assert.Equal(1, clickCount);
     }
 
     [Fact]
