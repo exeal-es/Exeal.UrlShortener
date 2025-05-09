@@ -1,4 +1,5 @@
 ﻿using Exeal.UrlShortener.Application;
+using Exeal.UrlShortener.Ports.Input;
 using Exeal.UrlShortener.Ports.Output;
 using Exeal.UrlShortener.Tests.Fakes;
 using NSubstitute;
@@ -66,5 +67,21 @@ public class ShortUrlManagerTests
         Assert.NotNull(shortUrl);
         Assert.Equal(validUrl, shortUrl.DestinationUrl);
         Assert.Equal(clock.UtcNow(), shortUrl.CreatedAt);
+    }
+    
+    [Fact]
+    public async Task CreateAsync_ShouldThrowSlugAlreadyExistsException_WhenSlugAlreadyExists()
+    {
+        // Arrange
+        var validUrl = "https://example.com";
+        var existingSlug = "curso-tdd";
+
+        await shortUrlRepository.SaveAsync(new ShortUrl(existingSlug, validUrl, clock.UtcNow()));
+
+        // Act
+        var act = async () => await shortUrlManager.CreateAsync(validUrl, existingSlug);
+
+        // Assert
+        await Assert.ThrowsAsync<SlugAlreadyExistsException>(act);
     }
 }

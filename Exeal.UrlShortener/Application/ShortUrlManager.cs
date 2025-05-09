@@ -10,6 +10,11 @@ public class ShortUrlManager(
     {
         var slug = customSlug ?? await slugGenerator.GenerateAsync();
 
+        if (await repository.ExistsAsync(slug))
+        {
+            throw new SlugAlreadyExistsException(slug);
+        }
+        
         var shortUrl = new ShortUrl(slug, destinationUrl, clock.UtcNow());
         await repository.SaveAsync(shortUrl);
 
