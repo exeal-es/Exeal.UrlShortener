@@ -11,7 +11,10 @@ public static class ServiceRegistration
         services.AddDatabase(configuration);
         
         services.AddScoped<IShortUrlRepository>(sp => 
-            new PostgresShortUrlRepository(configuration.GetConnectionString("DefaultConnection")!));
+        {
+            var postgresRepo = new PostgresShortUrlRepository(configuration.GetConnectionString("DefaultConnection")!);
+            return new CachedShortUrlRepository(postgresRepo);
+        });
 
         var isTrackingEnabled = configuration.GetValue<bool>("Features:Tracking:Enabled");
         services.AddScoped<IClickTracker>(sp => 
