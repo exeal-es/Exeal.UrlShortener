@@ -13,8 +13,11 @@ public static class ServiceRegistration
         services.AddScoped<IShortUrlRepository>(sp => 
             new PostgresShortUrlRepository(configuration.GetConnectionString("DefaultConnection")!));
 
+        var isTrackingEnabled = configuration.GetValue<bool>("Features:Tracking:Enabled");
         services.AddScoped<IClickTracker>(sp => 
-            new PostgresClickTracker(configuration.GetConnectionString("DefaultConnection")!));
+            isTrackingEnabled 
+                ? new PostgresClickTracker(configuration.GetConnectionString("DefaultConnection")!)
+                : new NullClickTracker());
 
         services.AddScoped<ISlugGenerator, RandomSlugGenerator>();
         services.AddScoped<IClock, SystemClock>();
