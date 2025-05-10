@@ -10,6 +10,7 @@ public class ShortUrlManager(
     IShortUrlRepository repository,
     ISlugGenerator slugGenerator,
     IClickStatisticsProvider clickStatisticsProvider,
+    IUrlConfiguration urlConfiguration,
     IClock clock) : IShortUrlManager
 {
     public async Task<Result<string>> CreateAsync(string destinationUrl, string? customSlug = null)
@@ -62,7 +63,11 @@ public class ShortUrlManager(
         try
         {
             var shortUrls = await repository.ListAsync(skip, take);
-            var dtos = shortUrls.Select(url => new ShortUrlDto(url.Slug, url.DestinationUrl, url.CreatedAt));
+            var dtos = shortUrls.Select(url => new ShortUrlDto(
+                url.Slug,
+                url.DestinationUrl,
+                url.CreatedAt,
+                $"{urlConfiguration.BaseUrl.TrimEnd('/')}/{url.Slug}"));
             logger.LogInformation("ListAsync - Successfully fetched {Count} short URLs", shortUrls.Count());
             return Result.Success(dtos);
         }

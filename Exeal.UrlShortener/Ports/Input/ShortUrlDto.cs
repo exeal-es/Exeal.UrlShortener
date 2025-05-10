@@ -4,5 +4,6 @@ public record ShortUrlDto
 (
     string Slug,
     string DestinationUrl,
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    string FullUrl
 );

@@ -1,3 +1,4 @@
+using Exeal.UrlShortener.Infra.Configuration;
 using Exeal.UrlShortener.Ports.Output;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,11 +32,11 @@ public static class ServiceRegistration
         {
             services.AddScoped<IClickTracker, NullClickTracker>();
             services.AddScoped<IClickStatisticsProvider, NullClickStatisticsProvider>();
-
         }
 
         services.AddScoped<ISlugGenerator, RandomSlugGenerator>();
         services.AddScoped<IClock, SystemClock>();
+        services.AddSingleton<IUrlConfiguration, UrlConfiguration>();
         
         return services;
     }

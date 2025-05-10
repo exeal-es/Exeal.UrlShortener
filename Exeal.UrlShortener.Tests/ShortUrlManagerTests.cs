@@ -8,11 +8,13 @@ namespace Exeal.UrlShortener.Tests;
 public class ShortUrlManagerTests
 {
     private const string GeneratedSlug = "abc123";
+    private const string TestBaseUrl = "https://test.short";
 
     private readonly ISlugGenerator slugGenerator;
     private readonly IShortUrlRepository shortUrlRepository;
     private readonly InMemoryClickTrackingService clickTrackingService;
     private readonly IClock clock;
+    private readonly IUrlConfiguration urlConfiguration;
 
     private readonly ShortUrlManager shortUrlManager;
 
@@ -22,9 +24,10 @@ public class ShortUrlManagerTests
         shortUrlRepository = new InMemoryShortUrlRepository();
         clickTrackingService = new InMemoryClickTrackingService();
         clock = new StaticClock();
+        urlConfiguration = new StaticUrlConfiguration(TestBaseUrl);
 
         shortUrlManager = new ShortUrlManager(NullLogger<ShortUrlManager>.Instance, shortUrlRepository, slugGenerator,
-            clickTrackingService, clock);
+            clickTrackingService, urlConfiguration, clock);
     }
 
     [Fact]
@@ -199,5 +202,34 @@ public class ShortUrlManagerTests
         // Assert
         Assert.True(result.IsSuccess);
         Assert.Empty(result.Value);
+    }
+
+    [Fact]
+    public async Task ListAsync_ShouldReturnShortUrls_WithFullUrlFieldSet()
+    {
+        // Arrange
+        var shortUrls = new[]
+        {
+            new ShortUrl("slug1", "https://example1.com", clock.UtcNow()),
+            new ShortUrl("slug2", "https://example2.com", clock.UtcNow()),
+            new ShortUrl("slug3", "https://example3.com", clock.UtcNow())
+        };
+
+        foreach (var shortUrl in shortUrls)
+        {
+            await shortUrlRepository.SaveAsync(shortUrl);
+        }
+
+        // Act
+        var result = await shortUrlManager.ListAsync();
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        var returnedUrls = result.Value.ToList();
+        Assert.Equal(3, returnedUrls.Count);
+        foreach (var dto in returnedUrls)
+        {
+            Assert.Equal($"{TestBaseUrl}/{dto.Slug}", dto.FullUrl);
+        }
     }
 }
