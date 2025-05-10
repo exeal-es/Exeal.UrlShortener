@@ -26,5 +26,5 @@ public interface IShortUrlManager
     /// <param name="skip">The number of items to skip (for pagination).</param>
     /// <param name="take">The maximum number of items to return (for pagination).</param>
     /// <returns>A result containing a collection of short URLs.</returns>
-    Task<Result<IEnumerable<ShortUrl>>> ListAsync(int skip = 0, int take = 10);
+    Task<Result<IEnumerable<ShortUrlDto>>> ListAsync(int skip = 0, int take = 10);
 }
