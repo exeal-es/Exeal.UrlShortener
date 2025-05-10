@@ -5,15 +5,8 @@ using Microsoft.AspNetCore.RateLimiting;
 namespace Exeal.UrlShortener.Api.Controllers;
 
 [ApiController]
-public class ShortUrlResolverController : ControllerBase
+public class ShortUrlResolverController(IShortUrlResolver shortUrlResolver) : ControllerBase
 {
-    private readonly IShortUrlResolver _shortUrlResolver;
-
-    public ShortUrlResolverController(IShortUrlResolver shortUrlResolver)
-    {
-        _shortUrlResolver = shortUrlResolver;
-    }
-
     [HttpGet("{slug}")]
     [EnableRateLimiting("ResolveLimiter")]
     public async Task<IActionResult> Resolve(string slug)
@@ -21,7 +14,7 @@ public class ShortUrlResolverController : ControllerBase
         var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
         var userAgent = HttpContext.Request.Headers.UserAgent.ToString();
 
-        var result = await _shortUrlResolver.ResolveAsync(slug, ipAddress, userAgent);
+        var result = await shortUrlResolver.ResolveAsync(slug, ipAddress, userAgent);
 
         if (!result.IsSuccess)
             return NotFound(new { error = result.Error });

@@ -1,5 +1,4 @@
 ﻿using CSharpFunctionalExtensions;
-using Exeal.UrlShortener.Ports.Output;
 
 namespace Exeal.UrlShortener.Ports.Input;
 
