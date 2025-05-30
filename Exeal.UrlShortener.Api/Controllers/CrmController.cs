@@ -11,6 +11,22 @@ namespace Exeal.UrlShortener.Api.Controllers;
 public class CrmController(IConfiguration configuration) : ControllerBase
 {
     [HttpGet("contacts")]
+    public async Task<ActionResult> GetAllContacts()
+    {
+        var notionClient = NotionClientFactory.Create(new ClientOptions
+        {
+            AuthToken = configuration["NotionToken"]
+        });
+
+        var contactsDatabaseId = "ce55f603a4c54881bee92f4fee5eef42";
+        var results = await notionClient.Databases.QueryAsync(contactsDatabaseId, new DatabasesQueryParameters());
+
+        var jsonResults = results.Results.Select(page => Notion2Markdown.ExportPageToJson(page)).ToList();
+        
+        return Ok(jsonResults);
+    }
+    
+    [HttpGet("contacts-by-email")]
     public async Task<ActionResult> GetContactInfoByWorkEmail(string email)
     {
         var notionClient = NotionClientFactory.Create(new ClientOptions
@@ -35,7 +51,7 @@ public class CrmController(IConfiguration configuration) : ControllerBase
         else
         {
             var resultId = results.Results.First().Id;
-            var pageExport = await notionClient.ExportPageToMarkdown(resultId);
+            var pageExport = await notionClient.ExportPageToJson(resultId);
             return Ok(pageExport);
         }
     }

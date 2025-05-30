@@ -7,14 +7,19 @@ namespace Exeal.UrlShortener.Api.Services;
 
 public static class Notion2Markdown
 {
-    public static async Task<string> ExportPageToMarkdown(this NotionClient notionClient, string pageId)
+    public static async Task<Dictionary<string, string>> ExportPageToJson(this NotionClient notionClient, string pageId)
     {
         var page = await notionClient.Pages.RetrieveAsync(pageId);
-        
-        var properties = ExtractPageProperties(page);
-        properties["id"] = pageId;
 
-        return JsonConvert.SerializeObject(properties, Formatting.Indented);
+        return ExportPageToJson(page);
+    }
+    
+    public static Dictionary<string, string> ExportPageToJson(Page page)
+    {
+        var properties = ExtractPageProperties(page);
+        properties["id"] = page.Id;
+
+        return properties;
     }
 
     private static Dictionary<string, string> ExtractPageProperties(Page page)
@@ -75,10 +80,13 @@ public static class Notion2Markdown
         }
         else if (property.Value is TitlePropertyValue titlePropertyValue)
         {
-            var title = titlePropertyValue.Title[0].PlainText;
-            if (!string.IsNullOrEmpty(title))
+            if (titlePropertyValue.Title != null && titlePropertyValue.Title.Count > 0)
             {
-                properties[ToCamelCase(property.Key)] = title;
+                var title = titlePropertyValue.Title[0].PlainText;
+                if (!string.IsNullOrEmpty(title))
+                {
+                    properties[ToCamelCase(property.Key)] = title;
+                }
             }
         }
         else if (property.Value is RelationPropertyValue relationPropertyValue)
