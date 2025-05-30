@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text;
 using Notion.Client;
 
