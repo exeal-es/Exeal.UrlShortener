@@ -13,26 +13,26 @@ public static class Notion2Json
 
         return new NotionContactDto(
             page.Id,
-            properties.GetValueOrDefault("esFueAlumnoEn", null),
-            properties.GetValueOrDefault("ciudad", null),
-            properties.GetValueOrDefault("telefono", null),
-            properties.GetValueOrDefault("emailPersonal", null),
-            properties.GetValueOrDefault("emailEmpresa", null),
-            properties.GetValueOrDefault("tags", null),
-            properties.GetValueOrDefault("empresa", null),
-            properties.GetValueOrDefault("lastEditedTime", null),
-            properties.GetValueOrDefault("decisionMaker", null),
-            properties.GetValueOrDefault("createdTime", null),
-            properties.GetValueOrDefault("name", null),
-            properties.GetValueOrDefault("ultimaInteraccion", null),
-            properties.GetValueOrDefault("perfilDeLinkedin", null),
-            properties.GetValueOrDefault("cargo", null)
+            (string?)properties.GetValueOrDefault("esFueAlumnoEn", null),
+            (string?)properties.GetValueOrDefault("ciudad", null),
+            (string?)properties.GetValueOrDefault("telefono", null),
+            (string?)properties.GetValueOrDefault("emailPersonal", null),
+            (string?)properties.GetValueOrDefault("emailEmpresa", null),
+            (string?)properties.GetValueOrDefault("tags", null),
+            (string?)properties.GetValueOrDefault("empresa", null),
+            DateTime.Parse((string)properties.GetValueOrDefault("lastEditedTime", null)),
+            (string?)properties.GetValueOrDefault("decisionMaker", null),
+            DateTime.Parse((string)properties.GetValueOrDefault("createdTime", null)),
+            (string?)properties.GetValueOrDefault("name", null),
+            (DateTime?)properties.GetValueOrDefault("ultimaInteraccion", null),
+            (string?)properties.GetValueOrDefault("perfilDeLinkedin", null),
+            (string?)properties.GetValueOrDefault("cargo", null)
         );
     }
 
-    private static Dictionary<string, string> ExtractPageProperties(Page page)
+    private static Dictionary<string, object> ExtractPageProperties(Page page)
     {
-        Dictionary<string, string> properties = new();
+        Dictionary<string, object> properties = new();
         foreach (var property in page.Properties)
         {
             AppendProperty(properties, property);
@@ -41,7 +41,7 @@ public static class Notion2Json
         return properties;
     }
 
-    private static void AppendProperty(Dictionary<string, string> properties,
+    private static void AppendProperty(Dictionary<string, object> properties,
         KeyValuePair<string, PropertyValue> property)
     {
         if (property.Value is NumberPropertyValue numberPropertyValue)
@@ -76,10 +76,9 @@ public static class Notion2Json
         }
         else if (property.Value is DatePropertyValue datePropertyValue)
         {
-            var date = datePropertyValue.Date?.ToString();
-            if (!string.IsNullOrEmpty(date))
+            if (datePropertyValue.Date?.Start != null)
             {
-                properties[ToCamelCase(property.Key)] = date;
+                properties[ToCamelCase(property.Key)] = datePropertyValue.Date.Start;
             }
         }
         else if (property.Value is CreatedTimePropertyValue createdTimePropertyValue)

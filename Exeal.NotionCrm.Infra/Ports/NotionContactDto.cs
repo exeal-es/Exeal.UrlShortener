@@ -9,11 +9,11 @@ public record NotionContactDto(
     string? EmailEmpresa,
     string? Tags,
     string? Empresa,
-    string? LastEditedTime,
+    DateTime LastEditedTime,
     string? DecisionMaker,
-    string? CreatedTime,
+    DateTime CreatedTime,
     string? Name,
-    string? UltimaInteraccion,
+    DateTime? UltimaInteraccion,
     string? PerfilDeLinkedin,
     string? Cargo
 );
