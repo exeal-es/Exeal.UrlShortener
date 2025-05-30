@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Exeal.UrlShortener.Api.Controllers;
 
-//[Authorize]
+[Authorize]
 [ApiController]
 [Route("api/crm")]
 public class CrmController(NotionCrmService notionCrmService) : ControllerBase
