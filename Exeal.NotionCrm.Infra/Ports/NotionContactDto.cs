@@ -1,6 +1,7 @@
 ﻿namespace Exeal.UrlShortener.Api.Services;
 
 public record NotionContactDto(
+    string Id,
     string EsFueAlumnoEn,
     string Ciudad,
     string Telefono,
@@ -13,6 +14,5 @@ public record NotionContactDto(
     string Name,
     string UltimaInteraccion,
     string PerfilDeLinkedin,
-    string Cargo,
-    string Id
+    string Cargo
 );

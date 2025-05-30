@@ -1,58 +1,31 @@
-﻿using Exeal.UrlShortener.Api.Services;
+﻿using Exeal.NotionCrm.Infra;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Notion.Client;
 
 namespace Exeal.UrlShortener.Api.Controllers;
 
 //[Authorize]
 [ApiController]
 [Route("api/crm")]
-public class CrmController(IConfiguration configuration) : ControllerBase
+public class CrmController(NotionCrmService notionCrmService) : ControllerBase
 {
     [HttpGet("contacts")]
     public async Task<ActionResult> GetAllContacts()
     {
-        var notionClient = NotionClientFactory.Create(new ClientOptions
-        {
-            AuthToken = configuration["NotionToken"]
-        });
-
-        var contactsDatabaseId = "ce55f603a4c54881bee92f4fee5eef42";
-        var results = await notionClient.Databases.QueryAsync(contactsDatabaseId, new DatabasesQueryParameters());
-
-        var jsonResults = results.Results.Select(page => Notion2Markdown.ExportPageToJson(page)).ToList();
-        
-        return Ok(jsonResults);
+        var allContacts = await notionCrmService.GetAllContacts();
+        return Ok(allContacts);
     }
     
     [HttpGet("contacts-by-email")]
     public async Task<ActionResult> GetContactInfoByWorkEmail(string email)
     {
-        var notionClient = NotionClientFactory.Create(new ClientOptions
-        {
-            AuthToken = configuration["NotionToken"]
-        });
+        var results = (await notionCrmService.GetContactInfoByWorkEmail(email)).ToList();
 
-        var contactsDatabaseId = "ce55f603a4c54881bee92f4fee5eef42";
-        var results = await notionClient.Databases.QueryAsync(contactsDatabaseId, new DatabasesQueryParameters()
+        return results.Count switch
         {
-            Filter = new EmailFilter("Email empresa", contains: email)
-        });
-
-        if (results.Results.Count == 0)
-        {
-            return NotFound($"Contact {email} no encontrado");
-        }
-        else if (results.Results.Count > 1)
-        {
-            return Conflict($"Multiples contactos para {email} encontrados ({results.Results.Count} resultados)");
-        }
-        else
-        {
-            var resultId = results.Results.First().Id;
-            var pageExport = await notionClient.ExportPageToJson(resultId);
-            return Ok(pageExport);
-        }
+            0 => NotFound($"Contact {email} no encontrado"),
+            > 1 => Conflict($"Multiples contactos para {email} encontrados ({results.Count} resultados)"),
+            _ => Ok(results.First())
+        };
     }
 }

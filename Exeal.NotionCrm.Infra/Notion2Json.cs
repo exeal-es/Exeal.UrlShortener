@@ -1,25 +1,18 @@
 ﻿using System.Globalization;
 using System.Text;
+using Exeal.UrlShortener.Api.Services;
 using Notion.Client;
 
-namespace Exeal.UrlShortener.Api.Services;
+namespace Exeal.NotionCrm.Infra;
 
-public static class Notion2Markdown
+public static class Notion2Json
 {
-    public static async Task<NotionContactDto> ExportPageToJson(this NotionClient notionClient, string pageId)
-    {
-        var page = await notionClient.Pages.RetrieveAsync(pageId);
-
-        return ExportPageToJson(page);
-    }
-    
-    public static NotionContactDto ExportPageToJson(Page page)
+    public static NotionContactDto ExportContactPageToJson(Page page)
     {
         var properties = ExtractPageProperties(page);
-        properties["id"] = page.Id;
-        
-        // Intentar mapear a NotionContactDto si contiene las propiedades necesarias
-        var contactDto = new NotionContactDto(
+
+        return new NotionContactDto(
+            page.Id,
             properties.GetValueOrDefault("esFueAlumnoEn", string.Empty),
             properties.GetValueOrDefault("ciudad", string.Empty),
             properties.GetValueOrDefault("telefono", string.Empty),
@@ -32,11 +25,8 @@ public static class Notion2Markdown
             properties.GetValueOrDefault("name", string.Empty),
             properties.GetValueOrDefault("ultimaInteraccion", string.Empty),
             properties.GetValueOrDefault("perfilDeLinkedin", string.Empty),
-            properties.GetValueOrDefault("cargo", string.Empty),
-            properties.GetValueOrDefault("id", string.Empty)
+            properties.GetValueOrDefault("cargo", string.Empty)
         );
-        
-        return contactDto;
     }
 
     private static Dictionary<string, string> ExtractPageProperties(Page page)
