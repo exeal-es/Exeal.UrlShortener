@@ -6,6 +6,7 @@ public record NotionContactDto(
     string Ciudad,
     string Telefono,
     string EmailPersonal,
+    string EmailEmpresa,
     string Tags,
     string Empresa,
     string LastEditedTime,

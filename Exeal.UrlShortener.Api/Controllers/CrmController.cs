@@ -9,23 +9,22 @@ namespace Exeal.UrlShortener.Api.Controllers;
 [Route("api/crm")]
 public class CrmController(NotionCrmService notionCrmService) : ControllerBase
 {
-    [HttpGet("contacts")]
-    public async Task<ActionResult> GetAllContacts()
+    [HttpGet("contacts/{id}")]
+    public async Task<ActionResult> GetContactById(Guid id)
     {
-        var allContacts = await notionCrmService.GetAllContacts();
-        return Ok(allContacts);
-    }
-    
-    [HttpGet("contacts-by-email")]
-    public async Task<ActionResult> GetContactInfoByWorkEmail(string email)
-    {
-        var results = (await notionCrmService.GetContactInfoByWorkEmail(email)).ToList();
-
-        return results.Count switch
+        var result = await notionCrmService.GetContactById(id);
+        if (result.IsFailure)
         {
-            0 => NotFound($"Contact {email} no encontrado"),
-            > 1 => Conflict($"Multiples contactos para {email} encontrados ({results.Count} resultados)"),
-            _ => Ok(results.First())
-        };
+            return NotFound(result.Error);
+        }
+
+        return Ok(result.Value);
+    }
+
+    [HttpGet("contacts")]
+    public async Task<ActionResult> FindContacts([FromQuery] string? email = null)
+    {
+        var foundContacts = await notionCrmService.FindContacts(email);
+        return Ok(foundContacts);
     }
 }

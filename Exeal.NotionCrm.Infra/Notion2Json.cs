@@ -17,6 +17,7 @@ public static class Notion2Json
             properties.GetValueOrDefault("ciudad", string.Empty),
             properties.GetValueOrDefault("telefono", string.Empty),
             properties.GetValueOrDefault("emailPersonal", string.Empty),
+            properties.GetValueOrDefault("emailEmpresa", string.Empty),
             properties.GetValueOrDefault("tags", string.Empty),
             properties.GetValueOrDefault("empresa", string.Empty),
             properties.GetValueOrDefault("lastEditedTime", string.Empty),
