@@ -18,10 +18,10 @@ public static class Notion2Json
             (string?)properties.GetValueOrDefault("telefono", null),
             (string?)properties.GetValueOrDefault("emailPersonal", null),
             (string?)properties.GetValueOrDefault("emailEmpresa", null),
-            (string?)properties.GetValueOrDefault("tags", null),
+            (List<string>)properties.GetValueOrDefault("tags", new List<string>()),
             (string?)properties.GetValueOrDefault("empresa", null),
             DateTime.Parse((string)properties.GetValueOrDefault("lastEditedTime", null)),
-            (string?)properties.GetValueOrDefault("decisionMaker", null),
+            (bool)properties.GetValueOrDefault("decisionMaker", false),
             DateTime.Parse((string)properties.GetValueOrDefault("createdTime", null)),
             (string?)properties.GetValueOrDefault("name", null),
             (DateTime?)properties.GetValueOrDefault("ultimaInteraccion", null),
@@ -113,11 +113,8 @@ public static class Notion2Json
         }
         else if (property.Value is MultiSelectPropertyValue multiSelectPropertyValue)
         {
-            var multiSelectSeparatedByCommas = string.Join(", ", multiSelectPropertyValue.MultiSelect.Select(s => s.Name));
-            if (!string.IsNullOrEmpty(multiSelectSeparatedByCommas))
-            {
-                properties[ToCamelCase(property.Key)] = multiSelectSeparatedByCommas;
-            }
+            var multiSelect = multiSelectPropertyValue.MultiSelect.Select(s => s.Name).ToList();
+            properties[ToCamelCase(property.Key)] = multiSelect;
         }
         else if (property.Value is PhoneNumberPropertyValue phoneNumberPropertyValue)
         {
@@ -129,8 +126,7 @@ public static class Notion2Json
         }
         else if (property.Value is CheckboxPropertyValue checkboxPropertyValue)
         {
-            var formatPropertyValue = checkboxPropertyValue.Checkbox ? "true" : "false";
-            properties[ToCamelCase(property.Key)] = formatPropertyValue;
+            properties[ToCamelCase(property.Key)] = checkboxPropertyValue.Checkbox;
         }
         else if (property.Value is RichTextPropertyValue richTextPropertyValue)
         {
