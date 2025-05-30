@@ -13,20 +13,20 @@ public static class Notion2Json
 
         return new NotionContactDto(
             page.Id,
-            properties.GetValueOrDefault("esFueAlumnoEn", string.Empty),
-            properties.GetValueOrDefault("ciudad", string.Empty),
-            properties.GetValueOrDefault("telefono", string.Empty),
-            properties.GetValueOrDefault("emailPersonal", string.Empty),
-            properties.GetValueOrDefault("emailEmpresa", string.Empty),
-            properties.GetValueOrDefault("tags", string.Empty),
-            properties.GetValueOrDefault("empresa", string.Empty),
-            properties.GetValueOrDefault("lastEditedTime", string.Empty),
-            properties.GetValueOrDefault("decisionMaker", string.Empty),
-            properties.GetValueOrDefault("createdTime", string.Empty),
-            properties.GetValueOrDefault("name", string.Empty),
-            properties.GetValueOrDefault("ultimaInteraccion", string.Empty),
-            properties.GetValueOrDefault("perfilDeLinkedin", string.Empty),
-            properties.GetValueOrDefault("cargo", string.Empty)
+            properties.GetValueOrDefault("esFueAlumnoEn", null),
+            properties.GetValueOrDefault("ciudad", null),
+            properties.GetValueOrDefault("telefono", null),
+            properties.GetValueOrDefault("emailPersonal", null),
+            properties.GetValueOrDefault("emailEmpresa", null),
+            properties.GetValueOrDefault("tags", null),
+            properties.GetValueOrDefault("empresa", null),
+            properties.GetValueOrDefault("lastEditedTime", null),
+            properties.GetValueOrDefault("decisionMaker", null),
+            properties.GetValueOrDefault("createdTime", null),
+            properties.GetValueOrDefault("name", null),
+            properties.GetValueOrDefault("ultimaInteraccion", null),
+            properties.GetValueOrDefault("perfilDeLinkedin", null),
+            properties.GetValueOrDefault("cargo", null)
         );
     }
 
@@ -101,7 +101,7 @@ public static class Notion2Json
         {
             if (relationPropertyValue.Relation.Count > 0)
             {
-                properties[ToCamelCase(property.Key)] = relationPropertyValue.Relation.Count + " items";
+                properties[ToCamelCase(property.Key)] = relationPropertyValue.Relation[0].Id;
             }
         }
         else if (property.Value is EmailPropertyValue emailPropertyValue)
