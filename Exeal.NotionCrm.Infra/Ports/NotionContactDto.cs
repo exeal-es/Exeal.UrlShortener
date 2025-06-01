@@ -1,4 +1,4 @@
-﻿namespace Exeal.UrlShortener.Api.Services;
+﻿namespace Exeal.NotionCrm.Infra.Ports;
 
 public record NotionContactDto(
     string Id,

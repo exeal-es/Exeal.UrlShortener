@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 using System.Text;
-using Exeal.UrlShortener.Api.Services;
+using Exeal.NotionCrm.Infra.Ports;
 using Notion.Client;
 
 namespace Exeal.NotionCrm.Infra;

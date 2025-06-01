@@ -1,10 +1,12 @@
 ﻿using Exeal.NotionCrm.Infra;
+using Exeal.NotionCrm.Infra.Ports;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Exeal.UrlShortener.Api.Controllers;
 
-[Authorize]
+//[Authorize]
 [ApiController]
 [Route("api/crm")]
 public class CrmController(NotionCrmService notionCrmService) : ControllerBase
@@ -26,5 +28,18 @@ public class CrmController(NotionCrmService notionCrmService) : ControllerBase
     {
         var foundContacts = await notionCrmService.FindContacts(email);
         return Ok(foundContacts);
+    }
+    
+    [HttpPost("contacts")]
+    public async Task<ActionResult> CreateContact([FromBody] CreateNotionContactDto request)
+    {
+        var result = await notionCrmService.CreateContact(request);
+        if (result.IsFailure)
+        {
+            return Problem(result.Error);
+        }
+
+        var pageId = result.Value;
+        return Created($"api/crm/contacts/{pageId}", new { Id = pageId });
     }
 }
