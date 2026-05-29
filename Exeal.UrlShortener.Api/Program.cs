@@ -1,5 +1,4 @@
 using System.Threading.RateLimiting;
-using Exeal.NotionCrm.Infra;
 using Exeal.UrlShortener.Application;
 using Exeal.UrlShortener.Infra;
 using Exeal.UrlShortener.Ports.Input;
@@ -72,9 +71,6 @@ builder.Services.AddScoped<IShortUrlResolver, ShortUrlResolver>();
 
 // Register infrastructure services
 builder.Services.AddInfrastructure(builder.Configuration);
-
-// Register CRM Services
-builder.Services.AddNotionCrm(builder.Configuration);
 
 var app = builder.Build();
 

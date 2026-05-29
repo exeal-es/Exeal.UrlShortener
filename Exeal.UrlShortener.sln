@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exeal.UrlShortener.Infra", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exeal.UrlShortener.Infra.Tests", "Exeal.UrlShortener.Infra.Tests\Exeal.UrlShortener.Infra.Tests.csproj", "{6A1CA830-F6B8-4DFE-AAD1-583511CAFF63}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exeal.NotionCrm.Infra", "Exeal.NotionCrm.Infra\Exeal.NotionCrm.Infra.csproj", "{D78B98C3-78A7-4D41-ACBD-524509F4F3B1}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,9 +37,5 @@ Global
 		{6A1CA830-F6B8-4DFE-AAD1-583511CAFF63}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A1CA830-F6B8-4DFE-AAD1-583511CAFF63}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A1CA830-F6B8-4DFE-AAD1-583511CAFF63}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D78B98C3-78A7-4D41-ACBD-524509F4F3B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D78B98C3-78A7-4D41-ACBD-524509F4F3B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D78B98C3-78A7-4D41-ACBD-524509F4F3B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D78B98C3-78A7-4D41-ACBD-524509F4F3B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
