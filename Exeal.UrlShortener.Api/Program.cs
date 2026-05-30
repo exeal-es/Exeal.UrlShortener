@@ -37,8 +37,8 @@ builder.Services.AddAuthentication(options =>
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(options =>
 {
-    options.Authority = "https://exeal-admin.eu.auth0.com/";
-    options.Audience = "https://exeal-urlshortener.onrender.com";
+    options.Authority = builder.Configuration["Auth:Authority"];
+    options.Audience = builder.Configuration["Auth:Audience"];
 });
 
 builder.Services.AddRateLimiter(options =>
