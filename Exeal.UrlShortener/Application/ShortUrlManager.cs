@@ -58,6 +58,29 @@ public class ShortUrlManager(
         return shortUrlStats;
     }
 
+    public async Task<Result> UpdateAsync(string slug, string? destinationUrl, string? title)
+    {
+        logger.LogInformation("UpdateAsync - Updating short URL with slug {Slug}", slug);
+        var shortUrl = await repository.LoadBySlugAsync(slug);
+
+        if (shortUrl == null)
+        {
+            logger.LogWarning("UpdateAsync - Slug {Slug} does not exist", slug);
+            return Result.Failure($"The slug {slug} does not exist.");
+        }
+
+        var updated = shortUrl with
+        {
+            DestinationUrl = destinationUrl ?? shortUrl.DestinationUrl,
+            Title = title ?? shortUrl.Title
+        };
+
+        await repository.UpdateAsync(updated);
+
+        logger.LogInformation("UpdateAsync - Short URL with slug {Slug} updated", slug);
+        return Result.Success();
+    }
+
     public async Task<Result<IEnumerable<ShortUrlDto>>> ListAsync(int skip = 0, int take = 10)
     {
         logger.LogInformation("ListAsync - Fetching short URLs with skip {Skip} and take {Take}", skip, take);

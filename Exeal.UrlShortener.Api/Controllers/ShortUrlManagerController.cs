@@ -32,6 +32,17 @@ public class ShortUrlManagerController(IShortUrlManager shortUrlManager) : Contr
         return Ok(result.Value);
     }
 
+    [HttpPatch("{slug}")]
+    public async Task<IActionResult> Update(string slug, [FromBody] UpdateShortUrlRequest request)
+    {
+        var result = await shortUrlManager.UpdateAsync(slug, request.DestinationUrl, request.Title);
+
+        if (!result.IsSuccess)
+            return NotFound(new { error = result.Error });
+
+        return NoContent();
+    }
+
     [HttpGet]
     public async Task<IActionResult> List([FromQuery] int skip = 0, [FromQuery] int take = 10)
     {

@@ -26,4 +26,13 @@ public interface IShortUrlManager
     /// <param name="take">The maximum number of items to return (for pagination).</param>
     /// <returns>A result containing a collection of short URLs.</returns>
     Task<Result<IEnumerable<ShortUrlDto>>> ListAsync(int skip = 0, int take = 10);
+
+    /// <summary>
+    /// Updates the title and/or destination URL of an existing short URL identified by its slug.
+    /// </summary>
+    /// <param name="slug">The unique identifier for the short URL to update.</param>
+    /// <param name="destinationUrl">The new destination URL. If null, the existing value is kept.</param>
+    /// <param name="title">The new title. If null, the existing value is kept.</param>
+    /// <returns>A result indicating success or an error message if the slug does not exist.</returns>
+    Task<Result> UpdateAsync(string slug, string? destinationUrl, string? title);
 }

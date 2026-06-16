@@ -281,6 +281,94 @@ public class ShortUrlManagerTests
     }
 
     [Fact]
+    public async Task UpdateAsync_ShouldUpdateDestinationUrl_WhenSlugExists()
+    {
+        // Arrange
+        var slug = "curso-tdd";
+        var originalUrl = "https://example.com";
+        var newUrl = "https://updated.com";
+        await shortUrlRepository.SaveAsync(new ShortUrl(slug, originalUrl, clock.UtcNow()));
+
+        // Act
+        var result = await shortUrlManager.UpdateAsync(slug, newUrl, null);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        var shortUrl = await shortUrlRepository.LoadBySlugAsync(slug);
+        Assert.NotNull(shortUrl);
+        Assert.Equal(newUrl, shortUrl.DestinationUrl);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_ShouldUpdateTitle_WhenSlugExists()
+    {
+        // Arrange
+        var slug = "curso-tdd";
+        await shortUrlRepository.SaveAsync(new ShortUrl(slug, "https://example.com", clock.UtcNow(), "Old Title"));
+
+        // Act
+        var result = await shortUrlManager.UpdateAsync(slug, null, "New Title");
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        var shortUrl = await shortUrlRepository.LoadBySlugAsync(slug);
+        Assert.NotNull(shortUrl);
+        Assert.Equal("New Title", shortUrl.Title);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_ShouldUpdateBothFields_WhenBothProvided()
+    {
+        // Arrange
+        var slug = "curso-tdd";
+        await shortUrlRepository.SaveAsync(new ShortUrl(slug, "https://example.com", clock.UtcNow(), "Old Title"));
+
+        // Act
+        var result = await shortUrlManager.UpdateAsync(slug, "https://updated.com", "New Title");
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        var shortUrl = await shortUrlRepository.LoadBySlugAsync(slug);
+        Assert.NotNull(shortUrl);
+        Assert.Equal("https://updated.com", shortUrl.DestinationUrl);
+        Assert.Equal("New Title", shortUrl.Title);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_ShouldNotChangeFields_WhenNullValuesProvided()
+    {
+        // Arrange
+        var slug = "curso-tdd";
+        var originalUrl = "https://example.com";
+        var originalTitle = "Original Title";
+        await shortUrlRepository.SaveAsync(new ShortUrl(slug, originalUrl, clock.UtcNow(), originalTitle));
+
+        // Act
+        var result = await shortUrlManager.UpdateAsync(slug, null, null);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        var shortUrl = await shortUrlRepository.LoadBySlugAsync(slug);
+        Assert.NotNull(shortUrl);
+        Assert.Equal(originalUrl, shortUrl.DestinationUrl);
+        Assert.Equal(originalTitle, shortUrl.Title);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_ShouldFail_WhenSlugDoesNotExist()
+    {
+        // Arrange
+        var nonExistentSlug = "non-existent-slug";
+
+        // Act
+        var result = await shortUrlManager.UpdateAsync(nonExistentSlug, "https://updated.com", "New Title");
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal($"The slug {nonExistentSlug} does not exist.", result.Error);
+    }
+
+    [Fact]
     public async Task ListAsync_ShouldReturnShortUrls_WithFullUrlFieldSet()
     {
         // Arrange

@@ -21,6 +21,14 @@ public class InMemoryShortUrlRepository : IShortUrlRepository
         return Task.CompletedTask;
     }
 
+    public Task UpdateAsync(ShortUrl shortUrl)
+    {
+        if (!storage.ContainsKey(shortUrl.Slug))
+            throw new InvalidOperationException("Slug not found.");
+        storage[shortUrl.Slug] = shortUrl;
+        return Task.CompletedTask;
+    }
+
     public Task<ShortUrl?> LoadBySlugAsync(string slug)
     {
         if (storage.TryGetValue(slug, out var shortUrl))

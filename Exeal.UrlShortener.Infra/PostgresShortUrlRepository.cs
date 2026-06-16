@@ -38,6 +38,21 @@ public class PostgresShortUrlRepository(string connectionString) : IShortUrlRepo
         }
     }
 
+    public async Task UpdateAsync(ShortUrl shortUrl)
+    {
+        using var connection = new NpgsqlConnection(connectionString);
+        var sql = @"
+            UPDATE ""ShortUrls""
+            SET ""DestinationUrl"" = @DestinationUrl, ""Title"" = @Title
+            WHERE ""Slug"" = @Slug";
+        await connection.ExecuteAsync(sql, new
+        {
+            shortUrl.Slug,
+            shortUrl.DestinationUrl,
+            shortUrl.Title
+        });
+    }
+
     public async Task<ShortUrl?> LoadBySlugAsync(string slug)
     {
         using var connection = new NpgsqlConnection(connectionString);

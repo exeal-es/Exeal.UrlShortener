@@ -17,6 +17,12 @@ public class CachedShortUrlRepository(IShortUrlRepository repository) : IShortUr
         _cache[shortUrl.Slug] = shortUrl;
     }
 
+    public async Task UpdateAsync(ShortUrl shortUrl)
+    {
+        await repository.UpdateAsync(shortUrl);
+        _cache[shortUrl.Slug] = shortUrl;
+    }
+
     public async Task<ShortUrl?> LoadBySlugAsync(string slug)
     {
         if (_cache.TryGetValue(slug, out var cachedUrl))
