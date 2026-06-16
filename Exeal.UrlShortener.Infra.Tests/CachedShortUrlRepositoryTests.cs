@@ -13,7 +13,7 @@ public class CachedShortUrlRepositoryTests
     {
         _repository = Substitute.For<IShortUrlRepository>();
         _cachedRepository = new CachedShortUrlRepository(_repository);
-        _testShortUrl = new ShortUrl("test-slug", "https://example.com", DateTime.UtcNow);
+        _testShortUrl = new ShortUrl("test-slug", "https://example.com", DateTime.UtcNow, "Test Title");
     }
 
     [Fact]
@@ -72,6 +72,31 @@ public class CachedShortUrlRepositoryTests
         // Assert
         Assert.Equal(_testShortUrl, result);
         await _repository.Received(0).LoadBySlugAsync(_testShortUrl.Slug); // Should not call repository
+    }
+
+    [Fact]
+    public async Task LoadBySlugAsync_ShouldPreserveTitle_WhenLoadingFromCache()
+    {
+        // Arrange
+        _repository.LoadBySlugAsync(_testShortUrl.Slug).Returns(_testShortUrl);
+        await _cachedRepository.LoadBySlugAsync(_testShortUrl.Slug); // populate cache
+
+        // Act
+        var result = await _cachedRepository.LoadBySlugAsync(_testShortUrl.Slug);
+
+        // Assert
+        Assert.Equal(_testShortUrl.Title, result!.Title);
+    }
+
+    [Fact]
+    public async Task SaveAsync_ShouldPreserveTitle_WhenCachingItem()
+    {
+        // Act
+        await _cachedRepository.SaveAsync(_testShortUrl);
+        var result = await _cachedRepository.LoadBySlugAsync(_testShortUrl.Slug);
+
+        // Assert
+        Assert.Equal(_testShortUrl.Title, result!.Title);
     }
 
     [Fact]

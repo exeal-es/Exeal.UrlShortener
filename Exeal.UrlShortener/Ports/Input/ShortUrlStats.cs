@@ -7,5 +7,6 @@ public record ShortUrlStats
     DateTime CreatedAt,
     int ClickCount,
     int UniqueVisitorCount,
-    string FullUrl
+    string FullUrl,
+    string? Title = null
 );

@@ -74,6 +74,37 @@ public class ShortUrlManagerTests
     }
 
     [Fact]
+    public async Task CreateAsync_ShouldSaveTitle_WhenTitleIsProvided()
+    {
+        // Arrange
+        var validUrl = "https://example.com";
+        var title = "Example Site";
+
+        // Act
+        await shortUrlManager.CreateAsync(validUrl, title: title);
+
+        // Assert
+        var shortUrl = await shortUrlRepository.LoadBySlugAsync(GeneratedSlug);
+        Assert.NotNull(shortUrl);
+        Assert.Equal(title, shortUrl.Title);
+    }
+
+    [Fact]
+    public async Task CreateAsync_ShouldSaveNullTitle_WhenNoTitleIsProvided()
+    {
+        // Arrange
+        var validUrl = "https://example.com";
+
+        // Act
+        await shortUrlManager.CreateAsync(validUrl);
+
+        // Assert
+        var shortUrl = await shortUrlRepository.LoadBySlugAsync(GeneratedSlug);
+        Assert.NotNull(shortUrl);
+        Assert.Null(shortUrl.Title);
+    }
+
+    [Fact]
     public async Task CreateAsync_ShouldFail_WhenSlugAlreadyExists()
     {
         // Arrange
@@ -114,6 +145,23 @@ public class ShortUrlManagerTests
         Assert.Equal(3, stats.ClickCount);
         Assert.Equal(2, stats.UniqueVisitorCount);
         Assert.Equal($"{TestBaseUrl}/{slug}", stats.FullUrl);
+    }
+
+    [Fact]
+    public async Task GetStatsAsync_ShouldIncludeTitle_WhenTitleIsSet()
+    {
+        // Arrange
+        var slug = "curso-tdd";
+        var title = "TDD Course";
+        var shortUrl = new ShortUrl(slug, "https://example.com", clock.UtcNow(), title);
+        await shortUrlRepository.SaveAsync(shortUrl);
+
+        // Act
+        var result = await shortUrlManager.GetStatsAsync(slug);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.Equal(title, result.Value.Title);
     }
 
     [Fact]
@@ -203,6 +251,33 @@ public class ShortUrlManagerTests
         // Assert
         Assert.True(result.IsSuccess);
         Assert.Empty(result.Value);
+    }
+
+    [Fact]
+    public async Task ListAsync_ShouldIncludeTitle_WhenTitleIsSet()
+    {
+        // Arrange
+        var shortUrls = new[]
+        {
+            new ShortUrl("slug1", "https://example1.com", clock.UtcNow(), "First"),
+            new ShortUrl("slug2", "https://example2.com", clock.UtcNow(), null),
+            new ShortUrl("slug3", "https://example3.com", clock.UtcNow(), "Third")
+        };
+
+        foreach (var shortUrl in shortUrls)
+        {
+            await shortUrlRepository.SaveAsync(shortUrl);
+        }
+
+        // Act
+        var result = await shortUrlManager.ListAsync();
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        var returnedUrls = result.Value.ToList();
+        Assert.Equal("First", returnedUrls.First(s => s.Slug == "slug1").Title);
+        Assert.Null(returnedUrls.First(s => s.Slug == "slug2").Title);
+        Assert.Equal("Third", returnedUrls.First(s => s.Slug == "slug3").Title);
     }
 
     [Fact]

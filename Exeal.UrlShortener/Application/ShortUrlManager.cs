@@ -13,7 +13,7 @@ public class ShortUrlManager(
     IUrlConfiguration urlConfiguration,
     IClock clock) : IShortUrlManager
 {
-    public async Task<Result<string>> CreateAsync(string destinationUrl, string? customSlug = null)
+    public async Task<Result<string>> CreateAsync(string destinationUrl, string? customSlug = null, string? title = null)
     {
         logger.LogInformation("CreateAsync - Creating short URL for {DestinationUrl} with custom slug {CustomSlug}",
             destinationUrl, customSlug);
@@ -26,7 +26,7 @@ public class ShortUrlManager(
             return Result.Failure<string>($"The slug {slug} is already exists.");
         }
 
-        var shortUrl = new ShortUrl(slug, destinationUrl, clock.UtcNow());
+        var shortUrl = new ShortUrl(slug, destinationUrl, clock.UtcNow(), title);
         await repository.SaveAsync(shortUrl);
 
         logger.LogInformation("CreateAsync - Short URL created with slug {Slug} for {DestinationUrl}", slug,
@@ -51,7 +51,8 @@ public class ShortUrlManager(
             shortUrl.CreatedAt,
             await clickStatisticsProvider.GetClickCountAsync(slug),
             await clickStatisticsProvider.GetUniqueVisitorCountAsync(slug),
-            $"{urlConfiguration.BaseUrl.TrimEnd('/')}/{slug}");
+            $"{urlConfiguration.BaseUrl.TrimEnd('/')}/{slug}",
+            shortUrl.Title);
 
         logger.LogInformation("GetStatsAsync - Completed fetching stats for slug {Slug}", slug);
         return shortUrlStats;
@@ -68,7 +69,8 @@ public class ShortUrlManager(
                 url.Slug,
                 url.DestinationUrl,
                 url.CreatedAt,
-                $"{urlConfiguration.BaseUrl.TrimEnd('/')}/{url.Slug}"));
+                $"{urlConfiguration.BaseUrl.TrimEnd('/')}/{url.Slug}",
+                url.Title));
             logger.LogInformation("ListAsync - Successfully fetched {Count} short URLs", shortUrls.Count());
             return Result.Success(dtos);
         }

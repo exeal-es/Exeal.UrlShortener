@@ -19,8 +19,8 @@ public class PostgresShortUrlRepository(string connectionString) : IShortUrlRepo
     {
         using var connection = new NpgsqlConnection(connectionString);
         var sql = @"
-            INSERT INTO ""ShortUrls"" (""Slug"", ""DestinationUrl"", ""CreatedAt"")
-            VALUES (@Slug, @DestinationUrl, @CreatedAt)";
+            INSERT INTO ""ShortUrls"" (""Slug"", ""DestinationUrl"", ""CreatedAt"", ""Title"")
+            VALUES (@Slug, @DestinationUrl, @CreatedAt, @Title)";
 
         try
         {
@@ -28,7 +28,8 @@ public class PostgresShortUrlRepository(string connectionString) : IShortUrlRepo
             {
                 shortUrl.Slug,
                 shortUrl.DestinationUrl,
-                shortUrl.CreatedAt
+                shortUrl.CreatedAt,
+                shortUrl.Title
             });
         }
         catch (PostgresException ex) when (ex.SqlState == "23505") // Unique violation
@@ -41,7 +42,7 @@ public class PostgresShortUrlRepository(string connectionString) : IShortUrlRepo
     {
         using var connection = new NpgsqlConnection(connectionString);
         var sql = @"
-            SELECT ""Slug"", ""DestinationUrl"", ""CreatedAt""
+            SELECT ""Slug"", ""DestinationUrl"", ""CreatedAt"", ""Title""
             FROM ""ShortUrls""
             WHERE ""Slug"" = @Slug";
 
@@ -52,7 +53,7 @@ public class PostgresShortUrlRepository(string connectionString) : IShortUrlRepo
     {
         using var connection = new NpgsqlConnection(connectionString);
         var sql = @"
-            SELECT ""Slug"", ""DestinationUrl"", ""CreatedAt""
+            SELECT ""Slug"", ""DestinationUrl"", ""CreatedAt"", ""Title""
             FROM ""ShortUrls""
             ORDER BY ""CreatedAt"" DESC
             LIMIT @Take OFFSET @Skip";

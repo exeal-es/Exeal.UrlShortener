@@ -13,7 +13,7 @@ public class ShortUrlManagerController(IShortUrlManager shortUrlManager) : Contr
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateShortUrlRequest request)
     {
-        var result = await shortUrlManager.CreateAsync(request.DestinationUrl, request.CustomSlug);
+        var result = await shortUrlManager.CreateAsync(request.DestinationUrl, request.CustomSlug, request.Title);
         
         if (!result.IsSuccess)
             return BadRequest(new { error = result.Error });

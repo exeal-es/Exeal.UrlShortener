@@ -10,7 +10,7 @@ public interface IShortUrlManager
     /// <param name="destinationUrl">The destination URL to be shortened.</param>
     /// <param name="customSlug">An optional custom slug for the short URL. If not provided, a slug will be generated.</param>
     /// <returns>A result containing the generated slug if successful, or an error message if the operation fails.</returns>
-    Task<Result<string>> CreateAsync(string destinationUrl, string? customSlug = null);
+    Task<Result<string>> CreateAsync(string destinationUrl, string? customSlug = null, string? title = null);
     
     /// <summary>
     /// Retrieves statistics for a short URL identified by its slug.

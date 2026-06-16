@@ -4,5 +4,6 @@ public record ShortUrl
 (
     string Slug,
     string DestinationUrl,
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    string? Title = null
 );
