@@ -113,6 +113,7 @@ public class ShortUrlManagerTests
         var stats = result.Value;
         Assert.Equal(3, stats.ClickCount);
         Assert.Equal(2, stats.UniqueVisitorCount);
+        Assert.Equal($"{TestBaseUrl}/{slug}", stats.FullUrl);
     }
 
     [Fact]

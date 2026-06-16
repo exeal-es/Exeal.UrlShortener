@@ -6,5 +6,6 @@ public record ShortUrlStats
     string DestinationUrl,
     DateTime CreatedAt,
     int ClickCount,
-    int UniqueVisitorCount
+    int UniqueVisitorCount,
+    string FullUrl
 );

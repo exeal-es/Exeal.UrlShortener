@@ -50,7 +50,8 @@ public class ShortUrlManager(
             shortUrl.DestinationUrl,
             shortUrl.CreatedAt,
             await clickStatisticsProvider.GetClickCountAsync(slug),
-            await clickStatisticsProvider.GetUniqueVisitorCountAsync(slug));
+            await clickStatisticsProvider.GetUniqueVisitorCountAsync(slug),
+            $"{urlConfiguration.BaseUrl.TrimEnd('/')}/{slug}");
 
         logger.LogInformation("GetStatsAsync - Completed fetching stats for slug {Slug}", slug);
         return shortUrlStats;
