@@ -1,70 +1,83 @@
-# Getting Started with Create React App
+# Exeal URL Shortener — Web
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+React 19 single-page application for managing short URLs. Authenticates with Auth0 and communicates with the [backend API](../backend/README.md).
 
-## Available Scripts
+## Tech stack
 
-In the project directory, you can run:
+- **React 19** with React Router 7
+- **Auth0** (`@auth0/auth0-react`) for authentication
+- **Tailwind CSS** for styling
+- **qrcode.react** for QR code generation
 
-### `npm start`
+## Pages and components
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+| Route | Component | Description |
+|-------|-----------|-------------|
+| `/` | `Profile` / `UrlList` / `UrlShortenerForm` | Dashboard: list links, create new ones |
+| `/links/:slug/details` | `LinkDetails` | Click statistics and QR code for a link |
+| `/links/:slug/edit` | `LinkEdit` | Edit destination URL and title |
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Getting started
 
-### `npm test`
+### Prerequisites
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Node.js 22
+- A running backend API (see [`../backend`](../backend/README.md))
+- An Auth0 application configured for SPA
 
-### `npm run build`
+### Environment variables
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Copy `.env.dist` to `.env.local` and fill in the values:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+cp .env.dist .env.local
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+| Variable | Description |
+|----------|-------------|
+| `REACT_APP_AUTH0_DOMAIN` | Your Auth0 tenant domain (e.g. `example.eu.auth0.com`) |
+| `REACT_APP_AUTH0_CLIENT_ID` | Auth0 SPA application client ID |
+| `REACT_APP_AUTH0_AUDIENCE` | Auth0 API audience identifier |
+| `REACT_APP_API_BASE_URL` | Base URL of the backend API (e.g. `http://localhost:5030`) |
 
-### `npm run eject`
+### Run in development
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```bash
+npm install
+npm start
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+The app will be available at http://localhost:3000.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Run tests
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```bash
+npm test
+```
 
-## Learn More
+### Build for production
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+npm run build
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+The production-ready static files are output to `build/`.
 
-### Code Splitting
+## Docker
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+The `Dockerfile` serves the production build with nginx:
 
-### Analyzing the Bundle Size
+```bash
+# Build the React app first
+npm run build
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+# Build and run the image
+docker build -t exeal/urlshortener-web .
+docker run -p 80:80 exeal/urlshortener-web
+```
 
-### Making a Progressive Web App
+> Note: environment variables are baked in at build time by Create React App. Pass them as `--build-arg` / environment variables during `npm run build`, not at container runtime.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## License
 
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+MIT © [Exeal](https://www.exeal.com)
