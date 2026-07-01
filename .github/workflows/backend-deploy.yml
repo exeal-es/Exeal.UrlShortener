@@ -15,6 +15,10 @@ permissions:
 env:
   IMAGE_NAME: ghcr.io/exeal-es/url-shortener
 
+defaults:
+  run:
+    working-directory: backend
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
