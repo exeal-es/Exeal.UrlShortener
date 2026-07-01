@@ -1,20 +1,35 @@
-﻿# Exeal.UrlShortener.Api
+# Exeal URL Shortener — API
 
-A simple, clean and extensible URL shortener API built with ASP.NET Core and following a hexagonal architecture.  
-This API allows creating short URLs, resolving them with tracking, and retrieving usage statistics.
+ASP.NET Core 10 REST API for creating and managing short URLs. Built with a hexagonal (ports & adapters) architecture backed by PostgreSQL.
 
----
+## Architecture
 
-## 🚀 Getting Started
+```
+Exeal.UrlShortener        — domain core (use cases, ports)
+Exeal.UrlShortener.Infra  — adapters (PostgreSQL, Redis cache, slug generator)
+Exeal.UrlShortener.Api    — HTTP entry point (controllers, Auth0 JWT validation)
+```
 
-### 1. Prerequisites
+## API endpoints
+
+All management endpoints require a valid Auth0 JWT (`Authorization: Bearer <token>`).
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| `POST` | `/api/shorturl` | Required | Create a short URL |
+| `GET` | `/api/shorturl` | Required | List short URLs (paginated) |
+| `GET` | `/api/shorturl/{slug}/stats` | Required | Get click statistics for a link |
+| `PATCH` | `/api/shorturl/{slug}` | Required | Update destination URL or title |
+| `GET` | `/{slug}` | Public | Redirect to destination URL (tracks click) |
+
+## Getting started
+
+### Prerequisites
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/en-us/download)
 - [Docker](https://www.docker.com/products/docker-desktop)
 
-### 2. Run PostgreSQL locally (dev environment)
-
-Use this command to spin up a PostgreSQL instance using Docker:
+### Run PostgreSQL locally
 
 ```bash
 docker run --name pg-urlshortener \
@@ -25,7 +40,7 @@ docker run --name pg-urlshortener \
   -d postgres:16
 ```
 
-Connection string for your `appsettings.Development.json`:
+Add the connection string to `Exeal.UrlShortener.Api/appsettings.Development.json`:
 
 ```json
 {
@@ -41,23 +56,30 @@ To stop and remove the container:
 docker stop pg-urlshortener && docker rm pg-urlshortener
 ```
 
-### 3. Run the API
+### Run the API
 
 ```bash
 dotnet run --project Exeal.UrlShortener.Api
 ```
 
-The API will be available at:
-http://localhost:5030
+The API will be available at http://localhost:5030.
 
-### 4. Running with Docker
+### Run tests
+
+```bash
+dotnet test
+```
+
+## Docker
 
 Build the image:
+
 ```bash
 docker build . -t exeal/url-shortener-api
 ```
 
 Run the container:
+
 ```bash
 docker run --name url-shortener-api \
   -e "ConnectionStrings__DefaultConnection=Host=host.docker.internal;Port=5432;Database=urlshortener;Username=devuser;Password=devpass" \
@@ -65,8 +87,6 @@ docker run --name url-shortener-api \
   exeal/url-shortener-api
 ```
 
----
-
-## 📝 License
+## License
 
 MIT © [Exeal](https://www.exeal.com)
