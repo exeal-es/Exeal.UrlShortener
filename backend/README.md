@@ -9,7 +9,7 @@ This API allows creating short URLs, resolving them with tracking, and retrievin
 
 ### 1. Prerequisites
 
-- [.NET 9 SDK](https://dotnet.microsoft.com/en-us/download)
+- [.NET 10 SDK](https://dotnet.microsoft.com/en-us/download)
 - [Docker](https://www.docker.com/products/docker-desktop)
 
 ### 2. Run PostgreSQL locally (dev environment)
@@ -69,4 +69,4 @@ docker run --name url-shortener-api \
 
 ## 📝 License
 
-MIT © [Exeal](https://exeal.com)
+MIT © [Exeal](https://www.exeal.com)
