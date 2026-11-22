@@ -63,20 +63,11 @@ npm run build
 
 The production-ready static files are output to `build/`.
 
-## Docker
+## Deployment
 
-The `Dockerfile` serves the production build with nginx:
+CI (`.github/workflows/frontend-deploy.yml`) builds the app and uploads `build/` to Cloudflare Pages (project `urlshortener-web`). Pages serves `index.html` for any unknown route, so client-side routes work on reload.
 
-```bash
-# Build the React app first
-npm run build
-
-# Build and run the image
-docker build -t exeal/urlshortener-web .
-docker run -p 80:80 exeal/urlshortener-web
-```
-
-> Note: environment variables are baked in at build time by Create React App. Pass them as `--build-arg` / environment variables during `npm run build`, not at container runtime.
+> Note: environment variables are baked in at build time by Create React App. CI passes them from the repo's Actions variables during `npm run build`.
 
 ## License
 

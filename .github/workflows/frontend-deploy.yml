@@ -1,19 +1,26 @@
 name: Frontend CI/CD
 
+# Despliega frontend/ en Cloudflare Pages (proyecto urlshortener-web, cuenta Exeal):
+# push a main -> producción (admin.exeal.com); PR -> preview en <rama>.urlshortener-web.pages.dev.
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+    paths:
+      - '.github/workflows/frontend-deploy.yml'
+      - 'frontend/**'
+  pull_request:
     paths:
       - '.github/workflows/frontend-deploy.yml'
       - 'frontend/**'
 
 permissions:
   contents: read
-  packages: write
+  deployments: write
+  pull-requests: write
 
-env:
-  IMAGE_NAME: ghcr.io/exeal-es/urlshortener-web
+concurrency:
+  group: frontend-deploy-${{ github.ref }}
+  cancel-in-progress: true
 
 defaults:
   run:
@@ -22,6 +29,8 @@ defaults:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    # Los PRs desde forks no tienen acceso a los secrets.
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
 
     steps:
       - uses: actions/checkout@v4
@@ -46,16 +55,19 @@ jobs:
           REACT_APP_AUTH0_AUDIENCE: ${{ vars.REACT_APP_AUTH0_AUDIENCE }}
           REACT_APP_API_BASE_URL: ${{ vars.REACT_APP_API_BASE_URL }}
 
-      - name: Login to GHCR
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Deploy to Cloudflare Pages
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: frontend
+          command: pages deploy build --project-name=urlshortener-web --branch=${{ github.head_ref || github.ref_name }}
 
-      - name: Build image
-        run: docker build -t $IMAGE_NAME:latest .
-
-      - name: Push image
-        run: docker push $IMAGE_NAME:latest
-
-      - name: Trigger Coolify deploy
+      - name: Comment preview URL
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          URL: ${{ steps.deploy.outputs.pages-deployment-alias-url || steps.deploy.outputs.deployment-url }}
         run: |
-          curl -X POST "${{ vars.COOLIFY_WEBHOOK_FRONTEND }}" \
-            -H "Authorization: Bearer ${{ secrets.COOLIFY_API_TOKEN }}"
+          gh pr comment ${{ github.event.pull_request.number }} --edit-last --create-if-none --body "Preview frontend: $URL"

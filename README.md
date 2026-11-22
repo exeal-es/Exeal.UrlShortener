@@ -26,7 +26,7 @@ Browser → React SPA → ASP.NET Core API → PostgreSQL
 Both services have independent GitHub Actions workflows under `.github/workflows/`:
 
 - `backend-deploy.yml` — builds, tests, packages to `ghcr.io/exeal-es/url-shortener`, and triggers a Coolify deploy.
-- `frontend-deploy.yml` — installs, builds the React app (environment variables injected at build time), packages to `ghcr.io/exeal-es/urlshortener-web`, and triggers a Coolify deploy.
+- `frontend-deploy.yml` — installs, builds the React app (environment variables injected at build time) and uploads `build/` to Cloudflare Pages (project `urlshortener-web`): pushes to `main` go to production (admin.exeal.com), PRs get a preview URL.
 
 Pushes to `main` trigger the relevant workflow only when files in that service's directory change.
 
