@@ -7,12 +7,12 @@ ASP.NET Core 10 REST API for creating and managing short URLs. Built with a hexa
 ```
 Exeal.UrlShortener        — domain core (use cases, ports)
 Exeal.UrlShortener.Infra  — adapters (PostgreSQL, Redis cache, slug generator)
-Exeal.UrlShortener.Api    — HTTP entry point (controllers, Auth0 JWT validation)
+Exeal.UrlShortener.Api    — HTTP entry point (controllers, Zitadel JWT validation)
 ```
 
 ## API endpoints
 
-All management endpoints require a valid Auth0 JWT (`Authorization: Bearer <token>`).
+All management endpoints require a valid Zitadel JWT (`Authorization: Bearer <token>`). `Auth:Audience` is the client id of the SPA, never the Zitadel project id: any client of the instance can ask for that one. `appsettings.json` points at the local client; production sets `Auth__Authority` and `Auth__Audience`.
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
