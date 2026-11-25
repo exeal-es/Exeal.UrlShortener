@@ -36,6 +36,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+          # La cabecera con el token del repo anularía el de exeal-design.
+          persist-credentials: false
 
       - name: Setup Node
         uses: actions/setup-node@v4
