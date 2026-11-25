@@ -1,6 +1,6 @@
 # Exeal URL Shortener
 
-A full-stack URL shortener with click tracking, statistics, and Auth0-based authentication.
+A full-stack URL shortener with click tracking, statistics, and Zitadel-based authentication.
 
 The repository is a monorepo with two independently deployable services:
 
@@ -14,10 +14,10 @@ The repository is a monorepo with two independently deployable services:
 ```
 Browser → React SPA → ASP.NET Core API → PostgreSQL
                ↑                ↑
-           Auth0 JWT       Auth0 JWT validation
+          Zitadel JWT     Zitadel JWT validation
 ```
 
-- Authentication is handled entirely by Auth0. The SPA obtains a JWT and passes it as a `Bearer` token to every API call.
+- Authentication is handled by Exeal's Zitadel (`auth.exeal.com`, managed in [`exeal-es/infra`](https://github.com/exeal-es/infra)): only Google accounts of Exeal's Workspace can sign in. The SPA obtains a JWT and passes it as a `Bearer` token to every API call.
 - The backend validates JWTs and enforces `[Authorize]` on all management endpoints.
 - URL resolution (`/{slug}`) is public and redirects the visitor while tracking the click.
 

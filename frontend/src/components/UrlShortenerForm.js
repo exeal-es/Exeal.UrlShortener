@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAccessToken } from '../auth';
 import { createShortUrl } from '../services/urlService';
 
 function UrlShortenerForm({ onUrlCreated, onClose }) {
@@ -8,7 +8,7 @@ function UrlShortenerForm({ onUrlCreated, onClose }) {
   const [title, setTitle] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { getAccessTokenSilently } = useAuth0();
+  const token = useAccessToken();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,7 +16,6 @@ function UrlShortenerForm({ onUrlCreated, onClose }) {
     setError(null);
 
     try {
-      const token = await getAccessTokenSilently();
       await createShortUrl(token, destinationUrl, customSlug, title);
       setDestinationUrl('');
       setCustomSlug('');

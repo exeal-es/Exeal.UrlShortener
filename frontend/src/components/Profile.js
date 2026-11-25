@@ -1,10 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
 import UrlList from './UrlList';
 import UrlShortenerForm from './UrlShortenerForm';
 
 function Profile() {
-  const { isAuthenticated, isLoading } = useAuth0();
   const urlListRef = useRef();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -15,9 +13,6 @@ function Profile() {
     if (isModalOpen) document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isModalOpen]);
-
-  if (!isAuthenticated) return null;
-  if (isLoading) return <div>Loading...</div>;
 
   const handleUrlCreated = () => {
     urlListRef.current?.fetchUrls();

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, forwardRef, useImperativeHandle } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAccessToken } from '../auth';
 import { fetchUrls } from '../services/urlService';
 import { BarChartIcon, EditIcon, CopyIcon, CheckIcon, RedirectIcon } from './icons';
 
@@ -8,12 +8,11 @@ const UrlList = forwardRef((props, ref) => {
   const [urls, setUrls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { getAccessTokenSilently } = useAuth0();
+  const token = useAccessToken();
 
   const fetchUrlsData = useCallback(async () => {
     setLoading(true);
     try {
-      const token = await getAccessTokenSilently();
       const data = await fetchUrls(token);
       setUrls(data);
     } catch (err) {
@@ -21,7 +20,7 @@ const UrlList = forwardRef((props, ref) => {
     } finally {
       setLoading(false);
     }
-  }, [getAccessTokenSilently]);
+  }, [token]);
 
   useImperativeHandle(ref, () => ({
     fetchUrls: fetchUrlsData

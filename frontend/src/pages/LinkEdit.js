@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAccessToken } from '../auth';
 import { fetchUrls, updateShortUrl } from '../services/urlService';
 import { RedirectIcon, EditIcon, SubmitIcon, CheckIcon } from '../components/icons';
 
 function LinkEdit() {
   const { slug } = useParams();
-  const { getAccessTokenSilently } = useAuth0();
+  const token = useAccessToken();
   const [url, setUrl] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -20,7 +20,6 @@ function LinkEdit() {
 
   const loadUrl = useCallback(async () => {
     try {
-      const token = await getAccessTokenSilently();
       const data = await fetchUrls(token);
       const match = data.find((u) => u.slug === slug);
       if (match) {
@@ -33,7 +32,7 @@ function LinkEdit() {
     } finally {
       setLoading(false);
     }
-  }, [getAccessTokenSilently, slug]);
+  }, [token, slug]);
 
   useEffect(() => {
     loadUrl();
@@ -41,7 +40,6 @@ function LinkEdit() {
 
   const handleSaveTitle = async () => {
     try {
-      const token = await getAccessTokenSilently();
       await updateShortUrl(token, slug, { title: titleValue });
       setUrl((prev) => ({ ...prev, title: titleValue }));
       setEditingTitle(false);
@@ -54,7 +52,6 @@ function LinkEdit() {
 
   const handleSaveDestUrl = async () => {
     try {
-      const token = await getAccessTokenSilently();
       await updateShortUrl(token, slug, { destinationUrl: destUrlValue });
       setUrl((prev) => ({ ...prev, destinationUrl: destUrlValue }));
       setEditingDestUrl(false);

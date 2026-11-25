@@ -1,25 +1,25 @@
 import React from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth } from 'react-oidc-context';
 import LoginButton from './LoginButton';
 import LogoutButton from './LogoutButton';
 
 function UserProfile() {
-  const { user, isAuthenticated } = useAuth0();
+  const { user, isAuthenticated } = useAuth();
 
   if (!isAuthenticated) return null;
 
   return (
     <div className="flex items-center gap-4">
       <div className="text-sm">
-        <p className="font-semibold text-gray-900">{user.name}</p>
-        <p className="text-gray-600">{user.email}</p>
+        <p className="font-semibold text-gray-900">{user.profile.name}</p>
+        <p className="text-gray-600">{user.profile.email}</p>
       </div>
     </div>
   );
 }
 
 function Navbar() {
-  const { isAuthenticated } = useAuth0();
+  const { isAuthenticated } = useAuth();
   
   return (
     <nav className="bg-white shadow-sm">

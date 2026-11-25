@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAccessToken } from '../auth';
 import { QRCodeSVG } from 'qrcode.react';
 import { fetchUrlStats } from '../services/urlService';
 import { RedirectIcon, CopyIcon, CheckIcon } from '../components/icons';
 
 function LinkDetails() {
   const { slug } = useParams();
-  const { getAccessTokenSilently } = useAuth0();
+  const token = useAccessToken();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,7 +16,6 @@ function LinkDetails() {
 
   const loadStats = useCallback(async () => {
     try {
-      const token = await getAccessTokenSilently();
       const data = await fetchUrlStats(token, slug);
       setStats(data);
     } catch (err) {
@@ -24,7 +23,7 @@ function LinkDetails() {
     } finally {
       setLoading(false);
     }
-  }, [getAccessTokenSilently, slug]);
+  }, [token, slug]);
 
   useEffect(() => {
     loadStats();
