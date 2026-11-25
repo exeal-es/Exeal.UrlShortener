@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useAccessToken } from '../auth';
 import { QRCodeSVG } from 'qrcode.react';
 import { fetchUrlStats } from '../services/urlService';
-import { RedirectIcon, CopyIcon, CheckIcon } from '../components/icons';
+import Message from '../components/Message';
+import PageHeader from '../components/PageHeader';
+import ShortLink from '../components/ShortLink';
 
 function LinkDetails() {
   const { slug } = useParams();
@@ -11,7 +13,6 @@ function LinkDetails() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [copied, setCopied] = useState(false);
   const qrRef = useRef(null);
 
   const loadStats = useCallback(async () => {
@@ -62,87 +63,49 @@ function LinkDetails() {
     img.src = url;
   };
 
-  const handleCopy = (text) => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 3000);
-  };
-
-  if (loading) return <div className="mt-8 p-4 text-gray-600">Loading...</div>;
-  if (error) return <div className="mt-8 p-4 text-red-600">Error: {error}</div>;
-  if (!stats) return <div className="mt-8 p-4 text-gray-600">Not found.</div>;
+  if (loading) return <Message>Cargando…</Message>;
+  if (error) return <Message error>Error: {error}</Message>;
+  if (!stats) return <Message>No se ha encontrado el enlace.</Message>;
 
   return (
-    <div className="mt-8 p-4">
-      <div className="max-w-2xl mx-auto mb-6">
-        <Link to="/" className="text-sm text-gray-500 hover:text-gray-700 hover:underline">
-          ← Back
-        </Link>
-      </div>
-      <div className="max-w-2xl mx-auto flex flex-col gap-4">
-        <div className="bg-white p-8 pt-6 rounded-xl shadow border border-gray-200 flex flex-col gap-2">
-          <div className="flex items-center justify-between mb-1">
-            <span className="font-semibold text-base text-gray-900">{stats.title || stats.slug}</span>
+    <>
+      <PageHeader title={stats.title || stats.slug} back />
+      <div className="app-container ex-section app-stack">
+        <section className="ex-card" aria-label="Enlace">
+          <div className="ex-card__body">
+            <ShortLink url={stats.fullUrl} />
+            <p className="app-destination">Lleva a {stats.destinationUrl}</p>
           </div>
-          <div className="flex items-center gap-2">
-            <a
-              className="text-blue-600 text-base break-all hover:underline"
-              href={stats.fullUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {stats.fullUrl}
-            </a>
-            <button
-              title="Copy short URL"
-              onClick={() => handleCopy(stats.fullUrl)}
-              className={`shrink-0 transition ${copied ? 'text-green-500' : 'text-gray-400 hover:text-blue-600'}`}
-            >
-              {copied ? <CheckIcon /> : <CopyIcon />}
-            </button>
-          </div>
-          <div className="flex items-center gap-1.5 text-gray-500 text-sm mt-1">
-            <RedirectIcon />
-            <span className="text-gray-800 break-all">{stats.destinationUrl}</span>
-          </div>
-        </div>
+        </section>
 
-        <div className="bg-white p-8 pt-6 rounded-xl shadow border border-gray-200">
-          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Stats</h3>
-          <div className="flex gap-8">
-            <div className="flex flex-col gap-1">
-              <span className="text-3xl font-bold text-gray-900">{stats.clickCount}</span>
-              <span className="text-sm text-gray-500">Total clicks</span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-3xl font-bold text-gray-900">{stats.uniqueVisitorCount}</span>
-              <span className="text-sm text-gray-500">Unique visitors</span>
+        <section className="ex-card">
+          <div className="ex-card__body">
+            <h2 className="ex-arrow-title">Estadísticas</h2>
+            <div className="ex-stats">
+              <p className="ex-stat"><b>{stats.clickCount}</b><span>Clics totales</span></p>
+              <p className="ex-stat"><b>{stats.uniqueVisitorCount}</b><span>Visitantes únicos</span></p>
             </div>
           </div>
-        </div>
+        </section>
 
-        <div className="bg-white p-8 pt-6 rounded-xl shadow border border-gray-200">
-          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">QR Code</h3>
-          <div ref={qrRef}>
-            <QRCodeSVG value={stats.fullUrl} size={160} />
+        <section className="ex-card">
+          <div className="ex-card__body">
+            <h2 className="ex-arrow-title">Código QR</h2>
+            <div ref={qrRef} className="app-qr">
+              <QRCodeSVG value={stats.fullUrl} size={160} fgColor="#182935" />
+            </div>
+            <div className="app-row">
+              <button type="button" onClick={downloadSVG} className="ex-button ex-button--hollow ex-button--nav">
+                Descargar SVG
+              </button>
+              <button type="button" onClick={downloadPNG} className="ex-button ex-button--hollow ex-button--nav">
+                Descargar PNG
+              </button>
+            </div>
           </div>
-          <div className="flex gap-2 mt-4">
-            <button
-              onClick={downloadSVG}
-              className="text-sm px-3 py-1.5 border border-gray-300 rounded hover:bg-gray-50 text-gray-700"
-            >
-              Download SVG
-            </button>
-            <button
-              onClick={downloadPNG}
-              className="text-sm px-3 py-1.5 border border-gray-300 rounded hover:bg-gray-50 text-gray-700"
-            >
-              Download PNG
-            </button>
-          </div>
-        </div>
+        </section>
       </div>
-    </div>
+    </>
   );
 }
 

@@ -5,10 +5,10 @@ function LoginButton() {
   const signIn = useSignIn();
 
   return (
-    <button onClick={signIn} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold transition">
-      Log In
+    <button type="button" onClick={signIn} className="ex-button">
+      Iniciar sesión
     </button>
   );
 }
 
-export default LoginButton; 
+export default LoginButton;

@@ -18,7 +18,7 @@ export async function createShortUrl(token, destinationUrl, customSlug, title) {
   );
 
   if (!response.ok) {
-    throw new Error('Failed to create shortened URL');
+    throw new Error('No se ha podido crear el enlace');
   }
 
   return response.json();
@@ -35,7 +35,7 @@ export async function fetchUrlStats(token, slug) {
   );
 
   if (!response.ok) {
-    throw new Error('Failed to fetch URL stats');
+    throw new Error('No se han podido cargar las estadísticas');
   }
 
   return response.json();
@@ -55,7 +55,7 @@ export async function updateShortUrl(token, slug, fields) {
   );
 
   if (!response.ok) {
-    throw new Error('Failed to update URL');
+    throw new Error('No se ha podido guardar el enlace');
   }
 }
 
@@ -70,7 +70,7 @@ export async function fetchUrls(token) {
   );
 
   if (!response.ok) {
-    throw new Error('Failed to fetch URLs');
+    throw new Error('No se han podido cargar los enlaces');
   }
 
   return response.json();
