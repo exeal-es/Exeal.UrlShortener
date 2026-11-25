@@ -3,3 +3,7 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
+
+// jsdom lacks these; react-router and oidc-client-ts need them.
+import { TextDecoder, TextEncoder } from 'util';
+Object.assign(global, { TextDecoder, TextEncoder });
