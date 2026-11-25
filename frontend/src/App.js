@@ -1,7 +1,6 @@
 import React from 'react';
 import { AuthProvider } from 'react-oidc-context';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import './App.css';
 import { CALLBACK_PATH, oidcConfig } from './auth';
 import Navbar from './components/Navbar';
 import Profile from './components/Profile';
@@ -14,9 +13,9 @@ function App() {
   return (
     <AuthProvider {...oidcConfig}>
       <BrowserRouter>
-        <div className="min-h-screen bg-gray-50 text-gray-900 font-sans">
+        <div className="app ex-type ex-theme-gray">
           <Navbar />
-          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <main>
             <Routes>
               <Route path={CALLBACK_PATH} element={<AuthCallback />} />
               <Route element={<RequireAuth />}>

@@ -6,7 +6,7 @@ React 19 single-page application for managing short URLs. Authenticates with Zit
 
 - **React 19** with React Router 7
 - **OIDC** (`react-oidc-context`, `oidc-client-ts`) against Zitadel for authentication
-- **Tailwind CSS** for styling
+- **[`@exeal/design`](https://github.com/exeal-es/exeal-design)** for styling (private repo: installing needs read access to it). `src/index.css` only holds the app's own layout
 - **qrcode.react** for QR code generation
 
 ## Pages and components

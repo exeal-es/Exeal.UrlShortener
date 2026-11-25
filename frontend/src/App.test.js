@@ -29,17 +29,17 @@ afterEach(() => jest.restoreAllMocks());
 test('signed out: offers to log in and calls no API', async () => {
   render(<App />);
 
-  expect(await screen.findByText(/log in to manage/i)).toBeInTheDocument();
-  expect(screen.queryByText(/your shortened urls/i)).not.toBeInTheDocument();
+  expect(await screen.findByText(/inicia sesión para gestionar/i)).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: /nuevo enlace/i })).not.toBeInTheDocument();
   expect(global.fetch).not.toHaveBeenCalled();
 });
 
 test('logging in remembers the page', async () => {
   window.history.replaceState({}, '', '/links/abc/edit');
   render(<App />);
-  await screen.findByText(/log in to manage/i);
+  await screen.findByText(/inicia sesión para gestionar/i);
 
-  userEvent.click(screen.getByRole('button', { name: /log in/i }));
+  userEvent.click(screen.getByRole('button', { name: /iniciar sesión/i }));
 
   await waitFor(() =>
     expect(UserManager.prototype.signinRedirect).toHaveBeenCalledWith({ state: { returnTo: '/links/abc/edit' } })
@@ -51,7 +51,7 @@ test('signed in: shows the user and calls the API with the access token', async 
   render(<App />);
 
   expect(await screen.findByText('ada@exeal.com')).toBeInTheDocument();
-  await screen.findByText(/no urls found/i);
+  await screen.findByText(/todavía no hay enlaces/i);
   expect(global.fetch.mock.calls[0][1].headers.Authorization).toBe('Bearer the-access-token');
 });
 
@@ -71,7 +71,7 @@ test('a failed callback shows the error and offers to log in', async () => {
   render(<App />);
 
   expect(await screen.findByText(/access_denied/)).toBeInTheDocument();
-  userEvent.click(screen.getByRole('button', { name: /log in/i }));
+  userEvent.click(screen.getByRole('button', { name: /iniciar sesión/i }));
   await waitFor(() =>
     expect(UserManager.prototype.signinRedirect).toHaveBeenCalledWith({ state: { returnTo: '/' } })
   );
@@ -87,4 +87,36 @@ test('an expired session goes to sign in by itself', async () => {
       expect(UserManager.prototype.signinRedirect).toHaveBeenCalledWith({ state: { returnTo: '/links/abc/details' } }),
     { timeout: 4000 }
   );
+});
+
+test('creating a link sends the form and closes the dialog', async () => {
+  // jsdom lacks modal dialogs.
+  HTMLDialogElement.prototype.showModal = function () { this.setAttribute('open', ''); };
+  storeUser(user(now() + 3600));
+  render(<App />);
+
+  userEvent.click(await screen.findByRole('button', { name: /nuevo enlace/i }));
+  userEvent.type(screen.getByLabelText(/url de destino/i), 'https://exeal.com');
+  userEvent.click(screen.getByRole('button', { name: /crear enlace/i }));
+
+  await waitFor(() => expect(screen.queryByLabelText(/url de destino/i)).not.toBeInTheDocument());
+  const [, request] = global.fetch.mock.calls.find(([, options]) => options.method === 'POST');
+  expect(JSON.parse(request.body)).toEqual({ destinationUrl: 'https://exeal.com' });
+});
+
+test('editing the title saves it and shows it', async () => {
+  const link = { slug: 'abc', title: 'Antes', fullUrl: 'https://s.test/abc', destinationUrl: 'https://exeal.com' };
+  global.fetch.mockResolvedValue({ ok: true, json: async () => [link] });
+  storeUser(user(now() + 3600));
+  window.history.replaceState({}, '', '/links/abc/edit');
+  render(<App />);
+
+  userEvent.click(await screen.findByRole('button', { name: /editar título/i }));
+  userEvent.clear(screen.getByLabelText('Título'));
+  userEvent.type(screen.getByLabelText('Título'), 'Después');
+  userEvent.click(screen.getByRole('button', { name: /guardar/i }));
+
+  expect(await screen.findByRole('heading', { name: 'Después' })).toBeInTheDocument();
+  const [, request] = global.fetch.mock.calls.find(([, options]) => options.method === 'PATCH');
+  expect(JSON.parse(request.body)).toEqual({ title: 'Después' });
 });

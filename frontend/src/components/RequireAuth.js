@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useAuth } from 'react-oidc-context';
 import { useSignIn } from '../auth';
+import Welcome from './Welcome';
+import Message from './Message';
 
 function RequireAuth() {
   const { isAuthenticated, isLoading, error, events } = useAuth();
@@ -11,9 +13,8 @@ function RequireAuth() {
   useEffect(() => events.addAccessTokenExpired(signIn), [events, signIn]);
 
   if (isAuthenticated) return <Outlet />;
-  if (isLoading) return <div className="mt-8 p-4 text-gray-600">Loading...</div>;
-  if (error) return <div className="mt-8 p-4 text-red-600">Error: {error.message}</div>;
-  return <div className="mt-8 p-4 text-gray-600">Log in to manage your short URLs.</div>;
+  if (isLoading) return <Message>Cargando…</Message>;
+  return <Welcome error={error} />;
 }
 
 export default RequireAuth;

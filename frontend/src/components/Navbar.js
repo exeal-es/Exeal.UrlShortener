@@ -1,43 +1,35 @@
 import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from 'react-oidc-context';
-import LoginButton from './LoginButton';
+import logo from '@exeal/design/dist/img/logo-exeal-header.svg';
 import LogoutButton from './LogoutButton';
 
-function UserProfile() {
-  const { user, isAuthenticated } = useAuth();
-
-  if (!isAuthenticated) return null;
-
-  return (
-    <div className="flex items-center gap-4">
-      <div className="text-sm">
-        <p className="font-semibold text-gray-900">{user.profile.name}</p>
-        <p className="text-gray-600">{user.profile.email}</p>
-      </div>
-    </div>
-  );
-}
-
 function Navbar() {
-  const { isAuthenticated } = useAuth();
-  
+  const { user, isAuthenticated } = useAuth();
+  const { pathname } = useLocation();
+
   return (
-    <nav className="bg-white shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex-shrink-0">
-            <h1 className="text-2xl font-bold text-gray-900">URL Shortener</h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <UserProfile />
-            <div className="flex items-center">
-              {!isAuthenticated ? <LoginButton /> : <LogoutButton />}
-            </div>
-          </div>
-        </div>
-      </div>
+    <nav className="ex-navbar ex-theme-dark" aria-label="Principal">
+      <Link to="/"><img className="ex-navbar__logo" src={logo} alt="Exeal" /></Link>
+      {isAuthenticated && (
+        <>
+          <button className="ex-navbar__toggle" type="button" popoverTarget="menu">Menú</button>
+          <ul className="ex-navbar__menu" id="menu" popover="auto">
+            <li>
+              <Link className="ex-navbar__link" to="/" aria-current={pathname === '/' ? 'page' : undefined}>
+                Enlaces
+              </Link>
+            </li>
+            <li className="app-user">
+              <div>{user.profile.name}</div>
+              <div>{user.profile.email}</div>
+            </li>
+            <li><LogoutButton /></li>
+          </ul>
+        </>
+      )}
     </nav>
   );
 }
 
-export default Navbar; 
+export default Navbar;

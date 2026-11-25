@@ -7,7 +7,7 @@ The repository is a monorepo with two independently deployable services:
 | Directory | Description |
 |-----------|-------------|
 | [`backend/`](backend/README.md) | ASP.NET Core 10 REST API (hexagonal architecture, PostgreSQL) |
-| [`frontend/`](frontend/README.md) | React 19 SPA (Create React App, Tailwind CSS) |
+| [`frontend/`](frontend/README.md) | React 19 SPA (Create React App, `@exeal/design`) |
 
 ## Architecture overview
 

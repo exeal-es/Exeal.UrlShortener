@@ -1,53 +1,51 @@
 import React, { useRef, useState, useEffect } from 'react';
+import PageHeader from './PageHeader';
 import UrlList from './UrlList';
 import UrlShortenerForm from './UrlShortenerForm';
 
 function Profile() {
   const urlListRef = useRef();
+  const dialogRef = useRef();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const closeModal = () => setIsModalOpen(false);
+
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') setIsModalOpen(false);
-    };
-    if (isModalOpen) document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    if (isModalOpen && !dialogRef.current.open) dialogRef.current.showModal();
   }, [isModalOpen]);
 
   const handleUrlCreated = () => {
     urlListRef.current?.fetchUrls();
-    setIsModalOpen(false);
+    closeModal();
   };
 
   return (
-    <div className="mt-8 p-4">
-      <div className="max-w-2xl mx-auto flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold text-gray-900">Your Shortened URLs</h2>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md font-semibold transition hover:bg-blue-700"
-        >
-          + New Short URL
+    <>
+      <PageHeader title={<>Tus enlaces <em>cortos</em></>}>
+        <button type="button" onClick={() => setIsModalOpen(true)} className="ex-button">
+          Nuevo enlace
         </button>
-      </div>
+      </PageHeader>
 
       <UrlList ref={urlListRef} />
 
       {isModalOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-          onClick={() => setIsModalOpen(false)}
+        <dialog
+          ref={dialogRef}
+          className="app-dialog ex-theme-light"
+          aria-labelledby="new-link-title"
+          onCancel={closeModal}
+          onMouseDown={(e) => {
+            const { left, right, top, bottom } = e.currentTarget.getBoundingClientRect();
+            const outside = e.clientX < left || e.clientX > right || e.clientY < top || e.clientY > bottom;
+            if (e.target === e.currentTarget && outside) closeModal();
+          }}
         >
-          <div onClick={(e) => e.stopPropagation()}>
-            <UrlShortenerForm
-              onUrlCreated={handleUrlCreated}
-              onClose={() => setIsModalOpen(false)}
-            />
-          </div>
-        </div>
+          <UrlShortenerForm titleId="new-link-title" onUrlCreated={handleUrlCreated} onClose={closeModal} />
+        </dialog>
       )}
-    </div>
+    </>
   );
 }
 
-export default Profile; 
+export default Profile;
